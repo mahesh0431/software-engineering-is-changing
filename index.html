@@ -1,0 +1,1583 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Software Engineering Is Changing</title>
+<style>
+:root{
+  --paper:#fbfdff; --ink:#172c49; --accent:#295acb; --accent2:#5579b4; --muted:#54667e;
+  --rule:#d5e0ee; --chrome:#edf2f8; --tint:#eaf2ff; --card:#ffffff; --soft:#f3f7fd;
+  --ease:cubic-bezier(.2,.75,.2,1);
+  color-scheme:light;
+  font-family:"Helvetica Neue",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--chrome);color:var(--ink);overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* ---------- stage ---------- */
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#deck{width:1280px;height:720px;position:relative;flex:none;transform-origin:center center;
+  box-shadow:0 18px 70px #1b375c1f;border-radius:6px;overflow:hidden;background:var(--paper)}
+.slide{position:absolute;inset:0;padding:64px 80px 56px;background:var(--paper);
+  opacity:0;visibility:hidden;transform:scale(1.012);
+  transition:opacity .7s var(--ease),transform .9s var(--ease),visibility 0s linear .7s}
+.slide.on{opacity:1;visibility:visible;transform:none;transition:opacity .7s var(--ease),transform .9s var(--ease)}
+.slide.leaving{transform:scale(.992)}
+.notes{display:none}
+
+/* type */
+.kicker{font-size:14px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:var(--accent);margin:0 0 18px}
+h1,h2,h3,p{margin:0}
+h2{font-size:54px;line-height:1.06;letter-spacing:-2px;font-weight:600;max-width:1080px}
+.sub{font-size:28px;line-height:1.35;color:var(--muted);margin-top:18px;max-width:900px}
+.big{font-size:74px;line-height:1.02;letter-spacing:-3px;font-weight:600}
+.accent{color:var(--accent)}
+.src{position:absolute;left:80px;bottom:26px;font-size:13px;color:var(--muted);letter-spacing:.2px}
+.foot{position:absolute;left:80px;right:80px;bottom:64px;font-size:28px;line-height:1.3;border-top:1px solid var(--rule);padding-top:22px;letter-spacing:-.4px}
+
+/* reveal */
+.r{opacity:0;transform:translateY(22px);filter:blur(4px)}
+.slide.on .r{opacity:1;transform:none;filter:none;
+  transition:opacity .8s var(--ease) calc(var(--d,0ms) + 200ms),transform .9s var(--ease) calc(var(--d,0ms) + 200ms),filter .8s var(--ease) calc(var(--d,0ms) + 200ms)}
+.rs{opacity:0;transform:scale(.85)}
+.slide.on .rs{opacity:1;transform:none;transition:opacity .6s var(--ease) calc(var(--d,0ms) + 200ms),transform .8s cubic-bezier(.3,1.5,.5,1) calc(var(--d,0ms) + 200ms)}
+
+/* ---------- cover ---------- */
+
+/* ---------- voice ---------- */
+.voice{display:grid;grid-template-columns:1fr 120px 1fr;align-items:center;gap:20px;margin-top:70px;height:300px}
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:22px;height:100%;box-shadow:0 10px 40px #1b375c0d;padding:34px;position:relative;overflow:hidden}
+.panel .tag{font-size:14px;letter-spacing:1.6px;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.wave{display:flex;align-items:center;gap:7px;height:170px;margin-top:20px}
+.wave b{flex:1;background:linear-gradient(var(--accent),var(--accent2));border-radius:6px;height:12%}
+.slide.on .wave b{animation:wave 1.3s ease-in-out infinite;animation-delay:calc(var(--i) * -97ms)}
+@keyframes wave{0%,100%{height:12%}50%{height:var(--h,70%)}}
+.arrow{height:4px;background:var(--rule);position:relative;border-radius:4px;overflow:hidden}
+.arrow::after{content:"";position:absolute;inset:0;width:40%;background:var(--accent);border-radius:4px;transform:translateX(-100%)}
+.slide.on .arrow::after{animation:flow 1.6s var(--ease) infinite}
+@keyframes flow{to{transform:translateX(260%)}}
+.code{margin-top:22px;display:grid;gap:14px}
+.code i{display:block;height:13px;border-radius:7px;background:var(--tint);transform-origin:left;transform:scaleX(0)}
+.code i.k{background:#c9d9f7}.code i.a{background:var(--accent);opacity:.75}
+.slide.on .code i{animation:type .9s var(--ease) forwards,retype 7s linear infinite;animation-delay:calc(var(--i) * 280ms + 700ms),calc(var(--i) * 280ms + 700ms)}
+@keyframes type{to{transform:scaleX(1)}}
+@keyframes retype{0%,80%{transform:scaleX(1);opacity:1}90%{opacity:0;transform:scaleX(1)}91%,100%{transform:scaleX(0);opacity:1}}
+
+/* ---------- steps ---------- */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:64px}
+.step{background:var(--card);border:1px solid var(--rule);border-radius:22px;padding:34px 32px 36px;min-height:236px;position:relative;box-shadow:0 10px 40px #1b375c0d}
+.step .n{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--tint);color:var(--accent);font-weight:700;font-size:20px;margin-bottom:26px}
+.step p{font-size:30px;line-height:1.22;letter-spacing:-.6px}
+.step.hl{background:var(--ink);color:#fff;border-color:var(--ink)}
+.step.hl .n{background:#ffffff1f;color:#fff}
+.who{position:absolute;top:36px;right:30px;font-size:13px;letter-spacing:1.4px;font-weight:700;text-transform:uppercase;padding:6px 11px;border-radius:30px;background:var(--tint);color:var(--accent)}
+.step.hl .who{background:#ffffff1f;color:#fff}
+
+/* ---------- pipeline ---------- */
+.pipe{position:relative;margin-top:120px;display:grid;grid-template-columns:repeat(5,1fr);gap:0}
+.pipe .line{position:absolute;left:10%;right:10%;top:43px;height:4px;background:var(--rule);border-radius:4px;overflow:hidden}
+.pipe .line::after{content:"";position:absolute;top:0;bottom:0;width:18%;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.slide.on .pipe .line::after{animation:pulse 2.6s linear infinite}
+@keyframes pulse{from{left:-18%}to{left:100%}}
+.node{text-align:center;position:relative}
+.node .dot{width:90px;height:90px;margin:0 auto;border-radius:50%;background:var(--card);border:2px solid var(--rule);display:grid;place-items:center;font-size:32px;position:relative;z-index:1;transition:border-color .5s,background .5s}
+.node .dot svg{width:38px;height:38px;stroke:var(--ink);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.node h3{font-size:27px;font-weight:600;margin-top:22px;letter-spacing:-.5px}
+.node .ai{display:inline-block;margin-top:14px;font-size:14px;font-weight:700;letter-spacing:1.4px;padding:6px 12px;border-radius:20px;background:var(--accent);color:#fff;opacity:0;transform:translateY(8px)}
+.slide.on .node .ai{animation:pop .6s var(--ease) forwards;animation-delay:var(--d)}
+.slide.on .node.aiy .dot{animation:lit .6s var(--ease) forwards;animation-delay:var(--d)}
+@keyframes pop{to{opacity:1;transform:none}}
+@keyframes lit{to{border-color:var(--accent);background:var(--tint)}}
+
+/* ---------- tiles ---------- */
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:48px}
+.tile{background:var(--card);border:1px solid var(--rule);border-radius:20px;padding:26px 28px;display:flex;align-items:center;gap:20px;min-height:112px;box-shadow:0 8px 30px #1b375c0b}
+.tile .ic{width:58px;height:58px;flex:none;border-radius:16px;background:var(--tint);display:grid;place-items:center}
+.tile .ic svg{width:30px;height:30px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tile p{font-size:25px;line-height:1.2;letter-spacing:-.4px}
+.tile small{display:block;font-size:17px;color:var(--muted);margin-top:4px;letter-spacing:0}
+
+/* ---------- stats ---------- */
+.two{display:grid;grid-template-columns:1.05fr 1fr;gap:60px;margin-top:46px;align-items:center}
+.stat{padding:18px 0 22px;border-top:1px solid var(--rule)}
+.stat:last-child{border-bottom:1px solid var(--rule)}
+.stat .v{font-size:66px;font-weight:600;letter-spacing:-2.5px;color:var(--accent);line-height:1}
+.stat .l{font-size:23px;color:var(--muted);margin-top:8px}
+.grid64{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;width:430px;margin:0 auto}
+.grid64 i{aspect-ratio:1;border-radius:8px;background:var(--tint);border:1px solid var(--rule)}
+.slide.on .grid64 i{animation:cell 3.2s ease-in-out infinite;animation-delay:var(--d)}
+@keyframes cell{0%,100%{background:var(--tint);border-color:var(--rule)}30%,55%{background:var(--accent);border-color:var(--accent)}}
+.badge{display:inline-flex;align-items:center;gap:10px;margin-top:26px;font-size:20px;font-weight:600;padding:10px 18px;border-radius:30px;background:var(--ink);color:#fff}
+
+.bar{height:26px;border-radius:14px;background:var(--tint);overflow:hidden;margin-top:14px;border:1px solid var(--rule)}
+.bar i{display:block;height:100%;width:0;border-radius:14px;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.slide.on .bar i{transition:width 2.4s var(--ease) .9s;width:94%}
+.vcards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:48px}
+.vcard{background:var(--card);border:1px solid var(--rule);border-radius:20px;padding:28px 30px}
+.vcard .v{font-size:60px;font-weight:600;letter-spacing:-2.3px;color:var(--ink);line-height:1}
+.vcard .l{font-size:21px;color:var(--muted);margin-top:10px}
+.cov{margin-top:34px;background:var(--card);border:1px solid var(--rule);border-radius:20px;padding:28px 30px}
+.cov .row{display:flex;justify-content:space-between;align-items:baseline}
+.cov .row span{font-size:23px;color:var(--muted)}
+.cov .row b{font-size:46px;letter-spacing:-1.6px;color:var(--accent)}.cov .row b span{font-size:inherit;color:inherit}
+
+/* swarm */
+.swarm{width:560px;height:430px;display:block;border-radius:24px;background:radial-gradient(circle at 50% 50%,#ffffff 0%,var(--soft) 70%);border:1px solid var(--rule)}
+.chip{display:inline-block;font-size:15px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:8px 14px;border-radius:20px;background:var(--tint);color:var(--accent);margin-bottom:22px}
+
+/* sequence scanner */
+.seqwrap{position:relative;width:590px;padding:26px 24px;border-radius:24px;background:var(--card);border:1px solid var(--rule);overflow:hidden}
+.seq{font:600 17px/1 "SF Mono",Menlo,Consolas,monospace;display:grid;grid-template-columns:repeat(26,1fr);gap:6px 4px;color:#9fb1c9;position:relative}
+.seq span{text-align:center;padding:5px 0;border-radius:4px}
+.slide.on .seq span.hit{animation:hit .5s ease forwards;animation-delay:var(--d)}
+@keyframes hit{to{background:var(--accent);color:#fff}}
+.scan{position:absolute;top:0;bottom:0;width:70px;left:-80px;background:linear-gradient(90deg,transparent,#295acb2e,transparent);border-right:2px solid #295acb88}
+.slide.on .scan{animation:scan 3.4s var(--ease) .5s 1 forwards}
+@keyframes scan{to{left:100%}}
+.found{position:absolute;border:2.5px solid var(--ink);border-radius:10px;opacity:0;transform:scale(1.1)}
+.slide.on .found{animation:found .6s var(--ease) 3.9s forwards}
+@keyframes found{to{opacity:1;transform:none}}
+.lab{display:flex;align-items:center;gap:14px;margin-top:22px;font-size:22px;color:var(--muted)}
+.lab b{color:var(--ink)}
+
+/* pattern */
+.pat{position:relative;margin-top:30px;height:430px}
+.pat svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len)}
+.slide.on .draw{animation:draw 1.4s var(--ease) forwards;animation-delay:var(--d,0ms)}
+@keyframes draw{to{stroke-dashoffset:0}}
+.pnode{position:absolute;width:280px;text-align:center;margin-left:-140px}
+.pnode .c{width:132px;height:132px;border-radius:50%;margin:0 auto;background:var(--card);border:2px solid var(--accent);display:grid;place-items:center;box-shadow:0 0 0 12px var(--tint)}
+.pnode .c svg{position:static;width:56px;height:56px;stroke:var(--accent);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.pnode h3{font-size:30px;font-weight:600;letter-spacing:-.7px;margin-top:24px}
+.pnode p{font-size:20px;color:var(--muted);margin-top:6px}
+.wordrow{display:flex;gap:16px;justify-content:center;position:absolute;left:0;right:0;bottom:0}
+.wordrow span{font-size:20px;font-weight:600;padding:10px 20px;border-radius:30px;border:1px solid var(--rule);background:var(--card)}
+
+/* ai loop */
+.loopwrap{display:grid;grid-template-columns:1fr 520px;align-items:center;height:100%;gap:30px}
+.loopwrap h2{font-size:68px;letter-spacing:-2.8px}
+.ring{width:520px;height:520px}
+.ring text{font:600 21px "Helvetica Neue",Arial,sans-serif;fill:var(--ink)}
+.spin{transform-origin:260px 260px}
+.slide.on .spin{animation:spin 14s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* list rows */
+.rows{margin-top:40px}
+.row2{display:grid;grid-template-columns:240px 1fr 150px;align-items:center;gap:30px;padding:22px 0;border-top:1px solid var(--rule)}
+.row2:last-child{border-bottom:1px solid var(--rule)}
+.row2 .who2{font-size:20px;font-weight:700;letter-spacing:.3px;color:var(--accent)}
+.row2 .what{font-size:30px;letter-spacing:-.6px;line-height:1.2}
+.row2 .when{font-size:18px;color:var(--muted);text-align:right}
+
+/* bottleneck */
+.bn{position:relative;margin-top:96px;display:grid;grid-template-columns:repeat(4,1fr);gap:26px}
+.stage{position:relative;height:210px;border-radius:24px;background:var(--card);border:1px solid var(--rule);padding:28px;display:flex;flex-direction:column;justify-content:space-between}
+.stage h3{font-size:30px;line-height:1.12;letter-spacing:-.7px;font-weight:600}
+.stage .st{font-size:14px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted)}
+.stage .st2{display:none}
+.slide.on .stage.go{animation:bneck 1.2s var(--ease) forwards;animation-delay:var(--d)}
+.slide.on .stage.go .st{animation:hide .01s forwards;animation-delay:calc(var(--d) + 1s)}
+.slide.on .stage.go .st2{display:block;opacity:0;animation:pop .5s forwards;animation-delay:calc(var(--d) + 1s);font-size:14px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--accent)}
+@keyframes bneck{0%{border-color:var(--rule)}35%{border-color:#d9534f;box-shadow:0 0 0 8px #d9534f1c}100%{border-color:var(--rule);background:var(--soft);box-shadow:none}}
+@keyframes hide{to{display:none;opacity:0;height:0}}
+.slide.on .stage.final{animation:final .8s var(--ease) forwards;animation-delay:var(--d)}
+@keyframes final{to{background:var(--ink);color:#fff;border-color:var(--ink);box-shadow:0 20px 50px #172c4940}}
+.slide.on .stage.final .st{animation:finalst .4s forwards;animation-delay:var(--d)}
+@keyframes finalst{to{color:#9cc0ff}}
+.spot{position:absolute;top:-44px;left:0;width:calc((100% - 78px)/4);text-align:center;font-size:15px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:#d9534f;opacity:0}
+.slide.on .spot{animation:spot 5.4s var(--ease) .4s forwards}
+@keyframes spot{0%{opacity:1;transform:translateX(0)}22%{transform:translateX(0)}30%{transform:translateX(calc(100% + 26px))}48%{transform:translateX(calc(100% + 26px))}56%{transform:translateX(calc(200% + 52px))}74%{transform:translateX(calc(200% + 52px))}82%,100%{opacity:1;transform:translateX(calc(300% + 78px));color:var(--accent)}}
+
+/* system hub */
+.hubwrap{display:grid;grid-template-columns:1fr 600px;gap:10px;align-items:center;margin-top:10px}
+.hub{width:600px;height:500px}
+.hub text{font:600 19px "Helvetica Neue",Arial,sans-serif;fill:var(--ink)}
+.hub .pulse{fill:var(--accent)}
+.hubpop{transform-box:fill-box;transform-origin:center;opacity:0;transform:scale(.6)}
+.slide.on .hubpop{animation:hubpop .7s cubic-bezier(.3,1.5,.5,1) forwards;animation-delay:var(--d)}
+@keyframes hubpop{to{opacity:1;transform:none}}
+.pts{margin-top:34px;display:grid;gap:18px}
+.pts p{font-size:30px;letter-spacing:-.6px;line-height:1.2;display:flex;gap:16px;align-items:baseline}
+.pts p::before{content:"";flex:none;width:12px;height:12px;border-radius:50%;background:var(--accent);transform:translateY(-4px)}
+
+/* two columns */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:56px}
+.col{border-radius:26px;padding:40px 40px 44px;background:var(--card);border:1px solid var(--rule);position:relative;overflow:hidden;min-height:300px}
+.col.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
+.col h3{font-size:44px;letter-spacing:-1.6px;font-weight:600;margin-top:22px}
+.col p{font-size:26px;line-height:1.3;margin-top:14px;color:var(--muted)}
+.col.dark p{color:#b9c9e2}
+.col .ic2 svg{width:54px;height:54px;stroke:var(--accent);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.col.dark .ic2 svg{stroke:#9cc0ff}
+.col .bg{position:absolute;right:-40px;bottom:-40px;width:220px;height:220px;opacity:.09}
+.slide.on .col .bg{animation:spin 30s linear infinite}
+
+/* hiring */
+.hire h2{font-size:66px;letter-spacing:-2.6px;max-width:1080px;margin-top:70px;line-height:1.12}
+.hire h2 .strike{color:var(--muted);text-decoration-line:line-through;text-decoration-thickness:6px;text-decoration-color:transparent;transition:text-decoration-color .6s var(--ease)}
+.slide.on.hire h2 .strike{text-decoration-color:#d9534f;transition-delay:1.4s}
+.quals{display:flex;flex-wrap:wrap;gap:18px;margin-top:62px}
+.quals span{font-size:32px;font-weight:600;letter-spacing:-.6px;padding:18px 30px;border-radius:40px;background:var(--tint);color:var(--accent)}
+
+/* journey */
+.journey{position:relative;height:300px;margin-top:40px}
+.journey svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.jn{position:absolute;text-align:center;width:190px;margin:-13px 0 0 -95px}
+.jn i{display:block;width:26px;height:26px;border-radius:50%;margin:0 auto 14px;background:var(--card);border:3px solid var(--accent);box-shadow:0 0 0 8px var(--tint)}
+.jn b{position:absolute;left:0;right:0;top:-38px;font-size:23px;font-weight:600;letter-spacing:-.3px}
+.jn.last i{background:var(--accent)}
+
+/* q&a */
+
+
+/* ---------- v2: steps ---------- */
+.slide [data-at]{opacity:0;transform:translateY(16px);transition:opacity .6s var(--ease),transform .7s var(--ease)}
+.slide [data-at].shown{opacity:1;transform:none}
+/* personal flow */
+.flow{display:grid;grid-template-columns:1fr 40px 1fr 40px 1fr 40px 1fr;align-items:center;margin-top:44px;gap:10px}
+.fbox{background:var(--card);border:1px solid var(--rule);border-radius:22px;padding:24px 22px;min-height:172px;box-shadow:0 8px 30px #1b375c0b}
+.fbox .ic{width:52px;height:52px;border-radius:14px;background:var(--tint);display:grid;place-items:center;margin-bottom:16px}
+.fbox .ic svg,.eic svg{width:28px;height:28px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.fbox b{display:block;font-size:25px;letter-spacing:-.5px}
+.fbox small{display:block;font-size:17px;color:var(--muted);margin-top:5px}
+.fbox.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
+.fbox.dark small{color:#b9c9e2}.fbox.dark .ic{background:#ffffff1f}.fbox.dark .ic svg{stroke:#9cc0ff}
+.example{margin-top:30px;display:flex;gap:20px;align-items:flex-start;background:var(--tint);border-radius:20px;padding:24px 28px}
+.example .chip{margin:3px 0 0;background:#fff;flex:none}
+.example p{font-size:25px;line-height:1.38;letter-spacing:-.3px}
+.also{margin-top:20px;font-size:19px;color:var(--muted)}
+/* evolution */
+.erarow{display:flex;align-items:baseline;gap:18px;margin-top:30px}
+.eyear{font-size:22px;font-weight:700;color:var(--accent);min-width:120px}
+.ename{font-size:36px;font-weight:600;letter-spacing:-1px}
+.ename.swap,.eyear.swap{animation:swap .5s var(--ease)}
+@keyframes swap{from{opacity:0;transform:translateY(10px)}}
+.etrack{flex:1;height:4px;background:var(--rule);border-radius:4px;align-self:center;margin-left:20px;overflow:hidden}
+.etrack i{display:block;height:100%;width:0;background:var(--accent);transition:width .7s var(--ease)}
+.evo{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:30px}
+.ecard{height:200px;border-radius:22px;border:1.5px solid var(--rule);background:var(--card);padding:24px;display:flex;flex-direction:column;transition:background .6s,border-color .6s,color .6s}
+.eic{width:48px;height:48px;border-radius:14px;background:var(--tint);display:grid;place-items:center;transition:background .6s}
+.ecard h3{font-size:27px;font-weight:600;letter-spacing:-.6px;margin:16px 0 auto}
+.ecard .state{align-self:flex-start;font-size:14px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:7px 12px;border-radius:20px;background:var(--soft);color:var(--muted);transition:background .6s,color .6s}
+.ecard[data-s=t]{background:var(--tint);border-color:#9db8ea}
+.ecard[data-s=t] .eic{background:#fff}
+.ecard[data-s=t] .state{background:#fff;color:var(--accent)}
+.ecard[data-s=a]{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 14px 40px #295acb40}
+.ecard[data-s=a] .eic{background:#ffffff26}.ecard[data-s=a] .eic svg{stroke:#fff}
+.ecard[data-s=a] .state{background:#ffffff26;color:#fff}
+.ecard.bump{animation:bump .6s var(--ease)}
+@keyframes bump{40%{transform:translateY(-10px) scale(1.04)}}
+.legend{display:flex;gap:26px;margin-top:22px;font-size:17px;color:var(--muted);align-items:center}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;margin-right:8px;vertical-align:-2px}
+.lh{background:#fff;border:1.5px solid var(--rule)}.lt{background:var(--tint);border:1.5px solid #9db8ea}.la{background:var(--accent)}
+.clickhint{margin-left:auto;font-size:14px;letter-spacing:1px;text-transform:uppercase;opacity:.6}
+#evo[data-step="6"] .clickhint{visibility:hidden}
+/* agent loop */
+.agl{display:grid;grid-template-columns:250px 50px 400px 50px 250px;align-items:center;justify-content:center;margin-top:6px}
+.endb{background:var(--card);border:1px solid var(--rule);border-radius:22px;padding:26px 24px;min-height:190px}
+.endb.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
+.endb span{font-size:13px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--accent)}
+.endb.dark span{color:#9cc0ff}
+.endb h3{font-size:28px;font-weight:600;letter-spacing:-.6px;margin:12px 0 10px;line-height:1.1}
+.endb p{font-size:18px;color:var(--muted);line-height:1.35}.endb.dark p{color:#b9c9e2}
+.lring{position:relative;width:400px;height:400px}
+.lring svg{position:absolute;inset:0;width:100%;height:100%}
+.lnode{position:absolute;width:190px;margin:-46px 0 0 -95px;text-align:center;background:var(--card);border:2px solid var(--accent);border-radius:18px;padding:12px 12px;box-shadow:0 0 0 8px var(--tint)}
+.lnode b{font-size:21px;display:block;letter-spacing:-.4px}
+.lnode small{font-size:14px;color:var(--muted);display:block;margin-top:4px;line-height:1.3}
+/* sicp */
+.sicpwrap{display:grid;grid-template-columns:1fr 440px;gap:30px;align-items:center;margin-top:60px}
+.q{font-size:52px;line-height:1.14;letter-spacing:-1.9px;font-weight:600}
+.att{font-size:19px;color:var(--muted);margin-top:28px;line-height:1.45}
+.parens{font:300 170px/1 "SF Mono",Menlo,Consolas,monospace;color:var(--accent);display:flex;align-items:center;justify-content:center}
+.parens>span:not(.cyc){opacity:0}
+.slide.on .parens .l1{animation:pl .9s var(--ease) .4s forwards}.slide.on .parens .l2{animation:pl .9s var(--ease) .6s forwards}
+.slide.on .parens .r1{animation:pr .9s var(--ease) .4s forwards}.slide.on .parens .r2{animation:pr .9s var(--ease) .6s forwards}
+@keyframes pl{from{opacity:0;transform:translateX(-70px)}to{opacity:1;transform:none}}
+@keyframes pr{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:none}}
+.cyc{position:relative;display:inline-block;width:230px;height:60px}
+.cyc span{position:absolute;inset:0;display:grid;place-items:center;font:600 26px "Helvetica Neue",Arial,sans-serif;color:var(--ink);letter-spacing:-.6px;opacity:0;white-space:nowrap}
+.slide.on .cyc span{animation:cyc 7.5s infinite;animation-delay:calc(1.2s + var(--i) * 2.5s)}
+@keyframes cyc{0%{opacity:0;transform:translateY(12px)}6%,30%{opacity:1;transform:none}36%,100%{opacity:0;transform:translateY(-12px)}}
+/* bun/vinext */
+.phr{display:grid;grid-template-columns:120px 1fr;align-items:baseline;padding:22px 0;border-top:1px solid var(--rule)}
+.phr:last-child{border-bottom:1px solid var(--rule)}
+.phr>span{font-size:14px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--accent)}
+.phr p{font-size:28px;line-height:1.25;letter-spacing:-.5px}
+.phr b{font-weight:600}
+.vcard>span{font-size:14px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--accent)}
+.vcard p{font-size:27px;line-height:1.25;letter-spacing:-.5px;margin-top:12px}
+.vcard b{color:var(--accent);font-weight:600}
+.evi{margin-top:22px;font-size:20px;color:var(--muted);padding:12px 18px;border-radius:14px;background:var(--soft);border:1px solid var(--rule);display:inline-block}
+.evi b{color:var(--ink)}
+/* where rows */
+.row2{grid-template-columns:290px 1fr 110px;padding:17px 0}
+.rows{margin-top:30px}
+.row2 .who2{font-size:17px;letter-spacing:.2px}
+.row2 .what{font-size:26px}
+.row2.none .what{color:var(--muted)}.row2.none .who2{color:var(--muted)}
+.row2.none{border-bottom:1px dashed var(--rule)!important;border-top:1px dashed var(--rule)}
+/* roles */
+.roleswrap{display:grid;grid-template-columns:1fr 560px;align-items:center;height:100%;gap:20px}
+.roleswrap h2{font-size:64px;letter-spacing:-2.6px}
+.orbit{position:relative;width:560px;height:520px}
+.oring{position:absolute;inset:0;width:100%;height:100%;opacity:0;transform-origin:280px 260px}
+.slide.on .oring{animation:pop .8s var(--ease) 3s forwards,spin 30s linear 3s infinite}
+.rp{position:absolute;left:50%;top:50%;white-space:nowrap;font-size:20px;font-weight:600;padding:12px 20px;border-radius:30px;background:var(--card);border:2px solid var(--accent);color:var(--ink);transform:translate(-50%,-50%) translate(var(--x),var(--y));opacity:0;box-shadow:0 8px 24px #1b375c12}
+.slide.on .rp{animation:rpin .6s var(--ease) forwards,rpconv 1.4s var(--ease) forwards;animation-delay:var(--d),calc(var(--d) + 1.5s)}
+@keyframes rpin{to{opacity:1}}
+@keyframes rpconv{to{transform:translate(-50%,-50%) translate(calc(var(--x) * .74),calc(var(--y) * .74));background:var(--tint)}}
+.rcore{position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;text-align:center;font-size:21px;font-weight:600;line-height:1.2;opacity:0;transform:scale(.5)}
+.slide.on .rcore{animation:rcore .8s cubic-bezier(.3,1.5,.5,1) 2.7s forwards}
+@keyframes rcore{to{opacity:1;transform:none}}
+/* ng */
+.ng{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:40px}
+.ngc{background:var(--card);border:1px solid var(--rule);border-radius:22px;padding:26px 24px;min-height:250px;display:flex;flex-direction:column;box-shadow:0 8px 30px #1b375c0b}
+.ngc .num{font-size:15px;font-weight:700;color:var(--accent);letter-spacing:1px}
+.ngc h3{font-size:26px;line-height:1.15;letter-spacing:-.6px;font-weight:600;margin:14px 0 auto}
+.ngc p{font-size:18px;color:var(--ink);border-top:1px solid var(--rule);padding-top:12px;margin-top:18px;line-height:1.35}
+.ngc p b{display:block;font-size:12px;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.plus{margin-top:22px;background:var(--ink);color:#fff;border-radius:18px;padding:20px 26px;font-size:24px;letter-spacing:-.3px}
+.plus b{color:#9cc0ff}
+/* close */
+.three{margin-top:40px}
+.t3{display:grid;grid-template-columns:90px 1fr;align-items:center;padding:26px 0;border-top:1px solid var(--rule)}
+.t3:last-child{border-bottom:1px solid var(--rule)}
+.t3 span{font-size:58px;font-weight:600;color:var(--accent);letter-spacing:-2px}
+.t3 p{font-size:36px;letter-spacing:-1px;line-height:1.2}
+.t3 b{font-weight:600;color:var(--accent)}
+
+.rsi{display:inline-block;margin-top:26px;font-size:26px;font-weight:700;letter-spacing:-.3px;color:#fff;background:var(--accent);padding:10px 20px;border-radius:14px}
+.labs{display:flex;gap:12px;margin-top:34px;flex-wrap:wrap}
+.labs span{font-size:18px;font-weight:600;padding:9px 16px;border-radius:24px;border:1px solid var(--rule);background:var(--card)}
+@property --mx{syntax:'<percentage>';inherits:false;initial-value:78%}
+@property --my{syntax:'<percentage>';inherits:false;initial-value:40%}
+.cover2{padding:0}
+.cover2::before,.sect::before{content:"";position:absolute;inset:0;background-image:radial-gradient(#295acb 1.3px,transparent 1.5px);background-size:28px 28px;opacity:.28;
+  -webkit-mask-image:radial-gradient(circle at var(--mx) var(--my),#000 0,#0006 22%,transparent 46%);mask-image:radial-gradient(circle at var(--mx) var(--my),#000 0,#0006 22%,transparent 46%)}
+.slide.on.cover2::before,.slide.on.sect::before{animation:roam 16s ease-in-out infinite alternate}
+@keyframes roam{0%{--mx:80%;--my:30%}35%{--mx:62%;--my:72%}70%{--mx:92%;--my:62%}100%{--mx:70%;--my:18%}}
+.cover2 h1{position:absolute;left:88px;top:92px;font-size:132px;line-height:.93;letter-spacing:-7px;font-weight:700;color:var(--ink)}
+.cover2.qa h1{top:220px;font-size:136px}
+.caret{display:inline-block;width:.075em;height:.78em;background:var(--accent);margin-left:.08em;vertical-align:-.04em;border-radius:2px}
+.slide.on .caret{animation:blink 1.05s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.byl{position:absolute;left:88px;right:88px;bottom:62px;display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid var(--rule);padding-top:22px}
+.byl b{display:block;font-size:26px;letter-spacing:-.5px;font-weight:700}
+.byl span{display:block;font-size:19px;color:var(--muted);margin-top:4px}
+.byl em{font-style:normal;font-size:15px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted)}
+.qr{position:absolute;right:88px;top:120px;width:300px;background:#fff;border:1px solid var(--rule);border-radius:26px;padding:26px 26px 22px;text-align:center;box-shadow:0 20px 60px #1b375c1a;z-index:2}
+.qrbox{position:relative;overflow:hidden;border-radius:6px}
+.qr svg{width:100%;height:auto;display:block}
+.qrscan{position:absolute;left:0;right:0;height:40px;top:-40px;background:linear-gradient(transparent,#295acb33,transparent)}
+.slide.on .qrscan{animation:qrscan 1.4s var(--ease) 1.2s 1}
+@keyframes qrscan{to{top:100%}}
+.qr b{display:block;font-size:22px;margin-top:18px;letter-spacing:-.3px}
+.qr span{display:block;font-size:15px;color:var(--muted);margin-top:4px}
+.rh{display:grid;grid-template-columns:1fr 400px;gap:50px;margin-top:50px;align-items:start}
+.rhrow{display:grid;grid-template-columns:170px 1fr 110px;align-items:center;gap:20px;margin-bottom:30px}
+.rhrow span{font-size:21px;color:var(--muted);font-weight:600}
+.rhbar{height:44px;border-radius:12px;background:var(--soft);border:1px solid var(--rule);overflow:hidden}
+.rhbar i{display:block;height:100%;width:0;border-radius:12px}
+.rhbar .say{background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.rhbar .real{background:#d9534f}
+.slide.on .rhbar .say{transition:width 1.4s var(--ease) .6s;width:90%}
+.slide.on .rhbar .real{transition:width 1.6s var(--ease) 1.8s;width:28%}
+.rhrow b{font-size:32px;letter-spacing:-1px;font-weight:600}
+.sayv{color:var(--accent)}
+.realv{color:#d9534f;opacity:0}
+.slide.on .realv{animation:pop .5s var(--ease) 3.3s forwards}
+.rhnote{font-size:15px;color:var(--muted);margin-top:4px}
+.rhterm{background:var(--ink);color:#fff;border-radius:24px;padding:28px 30px}
+.rhterm .chip{background:#ffffff1f;color:#9cc0ff;margin-bottom:14px}
+.rhterm p{font-size:28px;letter-spacing:-.6px;line-height:1.2;font-weight:600}
+.rhterm ul{margin:18px 0 0;padding-left:22px;color:#b9c9e2;font-size:20px;line-height:1.6}
+.thwrap{display:grid;grid-template-columns:700px 1fr;gap:40px;align-items:center;margin-top:20px}
+.thchart{width:700px;height:390px;overflow:visible}
+.thchart .ax{font:500 14px "Helvetica Neue",Arial,sans-serif;fill:#54667e}
+.thchart .pl{font:500 15px "Helvetica Neue",Arial,sans-serif;fill:#54667e}
+.thchart .pv{font-weight:700;fill:#172c49}
+.breach{margin-top:24px}
+.breach svg{width:100%;height:250px;overflow:visible}
+.breach .bl{font:700 13px "Helvetica Neue",Arial,sans-serif;fill:#54667e;letter-spacing:1.4px}
+.breach .bt{font:700 30px "Helvetica Neue",Arial,sans-serif;fill:#172c49;letter-spacing:-.8px}
+.slide.on .hfbox rect{animation:hfred .8s ease forwards 2.1s}
+@keyframes hfred{to{stroke:#d9534f;fill:#fdf0ef;stroke-width:3}}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+.fact{border-top:3px solid var(--accent);padding-top:14px}
+.fact:nth-child(2){border-color:#d9534f}
+.fact b{display:block;font-size:30px;letter-spacing:-1px;font-weight:600}
+.fact span{display:block;font-size:19px;color:var(--muted);margin-top:6px;line-height:1.35}
+.acards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+.acard{background:var(--card);border:1px solid var(--rule);border-radius:22px;padding:28px;min-height:190px;box-shadow:0 8px 30px #1b375c0b}
+.acard.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
+.acard .an{font-size:15px;font-weight:700;color:var(--accent);letter-spacing:1px}
+.acard.dark .an{color:#9cc0ff}
+.acard h3{font-size:32px;letter-spacing:-1px;font-weight:600;margin:14px 0 10px}
+.acard p{font-size:20px;color:var(--muted);line-height:1.35}
+.acard.dark p{color:#b9c9e2}
+.slide .q{font-size:46px;max-width:1080px;margin-top:10px}
+.slide .att{margin-top:18px}
+.trans{margin-top:44px;display:grid;gap:22px}
+.trow{display:grid;grid-template-columns:90px 220px 1fr 300px;align-items:center;gap:22px}
+.tlab{font-size:15px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted)}
+.trow.now .tlab{color:var(--accent)}
+.tbox{height:76px;border-radius:18px;border:1.5px solid var(--rule);background:var(--card);display:grid;place-items:center;font-size:25px;font-weight:600;letter-spacing:-.5px}
+.tbox.dark{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 14px 40px #295acb40}
+.tmid{text-align:center}
+.tmid small{display:block;margin-top:12px;font-size:19px;color:var(--muted)}
+.trow.now .tmid small{color:var(--ink);font-weight:600}
+.trow:not(.now){opacity:.75}
+.rhlab{font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.labs{display:grid;gap:10px;margin-top:28px;justify-items:start}
+.labs span{font-size:17px;font-weight:400;color:var(--ink)}
+.labs span b{font-weight:700;color:var(--accent);margin-right:8px}
+.rsicv{width:540px;height:590px;display:block}
+.loopwrap:has(.rsicv){grid-template-columns:1fr 540px}
+.lanes{width:1120px;height:440px;display:block;margin-top:26px}
+.optb{position:absolute;top:22px;right:26px;font-size:12px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;padding:6px 12px;border-radius:20px;background:#fff4e5;color:#b86b00;border:1px solid #f3d3a4;z-index:5}
+/* terminal */
+.term{margin-top:30px;border-radius:18px;overflow:hidden;background:#0f1e33;box-shadow:0 24px 60px #172c4933;max-width:900px}
+.tbar{display:flex;align-items:center;gap:8px;padding:12px 16px;background:#172c49}
+.tbar i{width:11px;height:11px;border-radius:50%;background:#ffffff33}
+.tbar span{margin-left:10px;font:500 13px "SF Mono",Menlo,monospace;color:#8aa3c7}
+.tbody{padding:20px 24px 22px;font:500 19px/1.55 "SF Mono",Menlo,Consolas,monospace;color:#c8d6ea;min-height:250px}
+.tl{opacity:0;transform:translateY(6px)}
+.slide.on .tl{animation:pop .4s var(--ease) forwards;animation-delay:var(--t)}
+.tl b{display:inline-block;min-width:74px;color:#6f8fc4;font-weight:600}
+.tl.you b{color:#9cc0ff}.tl.you{color:#fff}
+.tl u{text-decoration:none;color:#9cc0ff}
+.tl .ok{color:#6fd39a;font-weight:700}
+.tl.done{color:#6fd39a}
+.tcode{display:grid;gap:8px;margin:8px 0 8px 74px}
+.tcode i{display:block;height:9px;border-radius:5px;background:#ffffff1c;transform-origin:left;transform:scaleX(0)}
+.tcode i.a{background:#295acbaa}
+.slide.on .tcode i{animation:type .5s var(--ease) forwards}
+.slide.on .tcode i:nth-child(1){animation-delay:calc(var(--t) + 0s)}.slide.on .tcode i:nth-child(2){animation-delay:calc(var(--t) + .2s)}.slide.on .tcode i:nth-child(3){animation-delay:calc(var(--t) + .4s)}.slide.on .tcode i:nth-child(4){animation-delay:calc(var(--t) + .6s)}.slide.on .tcode i:nth-child(5){animation-delay:calc(var(--t) + .8s)}
+.me{margin-top:26px;font-size:34px;font-weight:600;letter-spacing:-.8px}
+.me span{color:var(--accent)}
+.me em{font-style:italic}
+/* bun port */
+.port{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;width:370px;margin:0 auto;perspective:600px}
+.port i{aspect-ratio:1;border-radius:7px;background:#e3e9f2}
+.slide.on .port i{animation:flipc .6s var(--ease) forwards;animation-delay:var(--d)}
+@keyframes flipc{0%{transform:rotateY(0)}50%{transform:rotateY(90deg);background:#e3e9f2}51%{background:var(--accent)}100%{transform:rotateY(0);background:var(--accent)}}
+.portleg{display:flex;gap:22px;justify-content:center;margin-top:16px;font-size:16px;color:var(--muted);align-items:center}
+.portleg i{display:inline-block;width:13px;height:13px;border-radius:3px;background:#e3e9f2;margin-right:7px;vertical-align:-1px}
+.portleg i.b{background:var(--accent)}
+.portleg .day{font-weight:700;color:var(--ink)}
+.mergeb{opacity:0}
+.slide.on .mergeb{animation:pop .5s var(--ease) 6s forwards}
+/* kinetic pattern */
+.kin{margin-top:40px}
+.kdom{display:flex;gap:12px;margin-bottom:34px}
+.kd{font-size:16px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;padding:9px 16px;border-radius:22px;color:var(--muted);border:1px solid var(--rule);transition:all .4s}
+.kd.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.kcols{display:grid;grid-template-columns:1fr 60px 1fr 60px 1fr;align-items:start}
+.kc h3{font-size:80px;letter-spacing:-4px;font-weight:700;color:#d5e0ee;transition:color .5s}
+.kc.lit h3{color:var(--accent)}
+.kc p{font-size:24px;color:var(--muted);margin-top:14px;min-height:64px;transition:opacity .35s;line-height:1.3}
+.kc p.fade{opacity:0}
+.karr{font-size:48px;color:#d5e0ee;margin-top:30px;text-align:center}
+.alist{margin-top:30px;display:grid;gap:14px}
+.alist p{font-size:19px;color:var(--muted);border-left:3px solid var(--accent);padding-left:14px;line-height:1.35}
+.alist b{display:block;font-size:24px;color:var(--ink);letter-spacing:-.4px}
+.arch{margin-top:18px}
+.archsvg{width:1120px;height:450px;overflow:visible}
+.archsvg .an{font:600 21px "Helvetica Neue",Arial,sans-serif;letter-spacing:-.3px}
+.archsvg .as{font:500 14px "Helvetica Neue",Arial,sans-serif}
+.archsvg .ah{font:700 12px "Helvetica Neue",Arial,sans-serif;fill:#54667e;letter-spacing:1.6px}
+.archsvg .ae{fill:none;stroke:#b8cbe9;stroke-width:2}
+.archsvg .ae.loop{stroke:#e8a7a5;stroke-width:2;stroke-dasharray:100}
+.archsvg .ae.human{stroke:#9db8ea;stroke-width:2}
+.rstage{position:relative;height:400px;margin-top:20px}
+.rcap{position:absolute;left:0;right:0;top:0;text-align:center;font-size:17px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.rcap.after{opacity:0;color:var(--accent)}
+.slide.on .rcap.before{animation:capout .5s ease 3s forwards}
+.slide.on .rcap.after{animation:pop .6s ease 3.4s forwards}
+@keyframes capout{to{opacity:0;transform:translateY(-8px)}}
+.rb{position:absolute;top:92px;width:170px;height:104px;border-radius:18px;background:var(--card);border:1.8px solid #c9d9f0;display:grid;place-items:center;text-align:center;font-size:21px;font-weight:600;letter-spacing:-.4px;padding:0 10px;opacity:0;z-index:2}
+.slide.on .rb{animation:pop .5s var(--ease) forwards,rmerge 1s var(--ease) forwards;animation-delay:var(--pd),3s}
+@keyframes rmerge{to{transform:translateX(var(--dx));border-color:transparent;background:transparent;border-radius:0}}
+.ra{position:absolute;top:130px;height:30px;opacity:0}
+.ra i{position:absolute;left:8px;right:8px;top:14px;height:2px;background:#b8cbe9}
+.ra i::after{content:"";position:absolute;right:-2px;top:-5px;border:6px solid transparent;border-left:8px solid #b8cbe9;border-right:0}
+.ra span{position:absolute;left:0;right:0;top:-10px;text-align:center;font-size:12px;color:var(--muted)}
+.slide.on .ra{animation:pop .4s ease 1s forwards,capout .4s ease 2.9s forwards}
+.rone{position:absolute;top:78px;height:132px;border-radius:24px;background:var(--tint);border:2px solid var(--accent);opacity:0;transform:scale(.96);z-index:1}
+.rone span{position:absolute;top:-17px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:7px 16px;border-radius:20px;white-space:nowrap}
+.slide.on .rone{animation:ronein .8s var(--ease) 3.6s forwards}
+@keyframes ronein{to{opacity:1;transform:none}}
+.ticket{position:absolute;top:60px;left:0;width:18px;height:18px;border-radius:5px;background:var(--ink);opacity:0;transform:translateX(var(--x0))}
+.slide.on .ticket{animation:hop 2s steps(1) 1.2s forwards}
+@keyframes hop{0%{opacity:1;transform:translateX(var(--x0))}20%{transform:translateX(calc(var(--x0) + var(--step)))}40%{transform:translateX(calc(var(--x0) + var(--step) * 2))}60%{transform:translateX(calc(var(--x0) + var(--step) * 3))}80%{transform:translateX(calc(var(--x0) + var(--step) * 4));opacity:1}100%{opacity:0;transform:translateX(calc(var(--x0) + var(--step) * 4))}}
+.rag{position:absolute;top:212px;width:90px;margin-left:-45px;text-align:center;opacity:0}
+.rag i{display:block;width:2px;height:34px;background:#9db8ea;margin:0 auto}
+.rag span{display:inline-block;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);background:#fff;border:1.5px solid #9db8ea;border-radius:16px;padding:6px 12px}
+.slide.on .rag{animation:pop .5s var(--ease) forwards;animation-delay:var(--d)}
+.slide.on #rfoot{animation:pop .6s ease 5.4s forwards}
+.hire2 h2{margin-top:0;font-size:56px}
+.cands{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:34px}
+.cand{position:relative;height:150px;border-radius:20px;background:var(--card);border:1.5px solid var(--rule);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;opacity:0;transform:translateY(14px)}
+.cand b{font-size:21px;font-weight:600;letter-spacing:-.4px}
+.cav{width:52px;height:52px;border-radius:50%;background:var(--soft);display:grid;place-items:center}
+.cav svg{width:28px;height:28px;stroke:#8a9ab0;fill:none;stroke-width:1.8;stroke-linecap:round}
+.slide.on .cand{animation:pop .5s var(--ease) forwards,cdim .6s ease 2.3s forwards;animation-delay:var(--pd),2.3s}
+@keyframes cdim{to{opacity:.35;transform:scale(.96)}}
+.slide.on .cand.hired{animation:pop .5s var(--ease) forwards,chire .7s var(--ease) 2.3s forwards;animation-delay:var(--pd),2.3s}
+@keyframes chire{to{opacity:1;transform:translateY(-10px) scale(1.06);background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 20px 50px #295acb44}}
+.slide.on .cand.hired .cav{animation:cavh .7s ease 2.3s forwards}
+@keyframes cavh{to{background:#ffffff26}}
+.slide.on .cand.hired .cav svg{animation:cavs .7s ease 2.3s forwards}
+@keyframes cavs{to{stroke:#fff}}
+.hb{position:absolute;top:-13px;right:14px;font-size:13px;font-weight:700;letter-spacing:.8px;padding:6px 12px;border-radius:16px;background:var(--ink);color:#fff;opacity:0}
+.slide.on .hb{animation:pop .5s var(--ease) 2.8s forwards}
+.stood{display:grid;grid-template-columns:150px repeat(4,1fr);gap:20px;align-items:start;margin-top:30px;padding:24px 28px;border-radius:20px;background:var(--tint);opacity:0;transform:translateY(12px)}
+.slide.on .stood{animation:pop .6s var(--ease) 3.3s forwards}
+.stl{font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);padding-top:5px}
+.stood p{font-size:18px;color:var(--muted);line-height:1.35}
+.stood b{display:block;font-size:23px;color:var(--ink);letter-spacing:-.4px;margin-bottom:2px}
+.sect{padding:0 88px}
+.sect .snum{position:absolute;left:88px;top:170px;font-size:30px;font-weight:700;color:var(--accent);letter-spacing:1px;font-variant-numeric:tabular-nums}
+.sect .stitle{position:absolute;left:88px;top:220px;font-size:112px;line-height:1;letter-spacing:-5.5px;font-weight:700;max-width:1100px}
+.sect .ssub{position:absolute;left:88px;top:360px;font-size:32px;color:var(--muted);letter-spacing:-.6px}
+.sprog{position:absolute;left:88px;bottom:70px;display:flex;gap:8px}
+.sprog i{width:44px;height:5px;border-radius:3px;background:var(--rule)}
+.sprog i.done{background:#9db8ea}
+.sprog i.on{background:var(--accent)}
+/* ---------- chrome ---------- */
+#hud{white-space:nowrap;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:16px;padding:8px 10px 8px 18px;border-radius:40px;background:#ffffffe8;border:1px solid var(--rule);box-shadow:0 8px 30px #1b375c14;font-size:13px;color:var(--muted);transition:opacity .5s;z-index:10;backdrop-filter:blur(8px)}
+#hud.idle{opacity:0;pointer-events:none}
+#hud button{padding:7px 12px;border-radius:20px;color:var(--ink);font-size:13px}
+#hud button:hover{background:var(--tint)}
+#hud kbd{font:11px Arial;border:1px solid var(--rule);border-radius:4px;padding:1px 5px;margin-left:5px;color:var(--muted)}
+#chapter{font-weight:700;color:var(--accent);letter-spacing:.3px}
+#bar{position:fixed;left:0;top:0;height:3px;background:var(--accent);transition:width .6s var(--ease);z-index:10}
+#notesPanel{position:fixed;top:0;right:0;bottom:0;width:min(460px,92vw);background:#fff;border-left:1px solid var(--rule);box-shadow:-20px 0 60px #1b375c1a;padding:28px 30px 90px;overflow:auto;transform:translateX(105%);transition:transform .45s var(--ease);z-index:20;font-size:16px;line-height:1.55}
+#notesPanel.open{transform:none}
+#notesPanel h4{margin:0 0 4px;font-size:13px;letter-spacing:1.6px;text-transform:uppercase;color:var(--accent)}
+#notesPanel .nt{font-size:22px;font-weight:600;letter-spacing:-.4px;margin:0 0 6px;line-height:1.2}
+#notesPanel .tm{font-size:13px;color:var(--muted);margin-bottom:16px}
+#notesPanel a{color:var(--accent)}
+#notesPanel p{margin:0 0 12px}
+#notesPanel ul{padding-left:20px}
+#notesPanel .care{background:var(--soft);border-left:3px solid var(--accent2);padding:10px 14px;border-radius:6px;font-size:14px;color:var(--muted)}
+#notesPanel .srcs{font-size:13px;color:var(--muted);border-top:1px solid var(--rule);padding-top:10px;margin-top:14px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="stage"><div id="deck">
+
+<!-- 1 · COVER -->
+<section class="slide cover2" data-ch="Opening" data-t=".5">
+  <h1 class="r" style="--d:150ms">Software<br>Engineering<br>Is <span class="accent" data-scramble="Changing">Changing</span><i class="caret"></i></h1>
+  <div class="byl r" style="--d:600ms"><div><b>Mahesh Palavalli</b><span>Architect, Office of the CTO · SAP</span></div></div>
+  <aside class="notes">
+    <p>Hi everyone. I'm Mahesh Palavalli, an architect in the Office of the CTO at SAP. The session title is about AI coding, but saying “coding is changing” won't tell you much you don't already know.</p>
+    <p>What I want to do today is start from what I see in my own work, and connect it to what's happening around the world: bigger software projects, mathematics and biology, and AI helping to build AI itself. Then we'll look at what that means for our work and for who we hire.</p>
+    <p>Transition: “Let me start with how I actually work now.”</p>
+  </aside>
+</section>
+
+<!-- 2 · SECTION 01 -->
+<section class="slide sect" data-ch="My work" data-t=".2">
+  <p class="snum r"><span data-scramble="01">01</span></p>
+  <h2 class="stitle r" style="--d:150ms">My work</h2>
+  <p class="ssub r" style="--d:350ms">What changed in how I build</p>
+  <div class="sprog r" style="--d:500ms"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <aside class="notes"><p>Section 1 of 6: <strong>My work</strong>. What changed in how I build.</p></aside>
+</section>
+<!-- 3 · VOICE -->
+<section class="slide" data-ch="My work" data-t="1.5">
+  <h2 class="r" style="--d:100ms">I mostly <span class="accent">talk</span> to AI now.</h2>
+  <div class="voice">
+    <div class="panel r" style="--d:300ms"><p class="tag">I say</p>
+      <div class="wave">
+        <b style="--i:0;--h:40%"></b><b style="--i:1;--h:70%"></b><b style="--i:2;--h:55%"></b><b style="--i:3;--h:90%"></b><b style="--i:4;--h:62%"></b><b style="--i:5;--h:35%"></b><b style="--i:6;--h:80%"></b><b style="--i:7;--h:95%"></b><b style="--i:8;--h:58%"></b><b style="--i:9;--h:44%"></b><b style="--i:10;--h:75%"></b><b style="--i:11;--h:88%"></b><b style="--i:12;--h:50%"></b><b style="--i:13;--h:30%"></b><b style="--i:14;--h:66%"></b><b style="--i:15;--h:82%"></b><b style="--i:16;--h:46%"></b><b style="--i:17;--h:38%"></b>
+      </div></div>
+    <div class="arrow r" style="--d:500ms"></div>
+    <div class="panel r" style="--d:700ms"><p class="tag">AI builds</p>
+      <div class="code">
+        <i class="k" style="--i:0;width:48%"></i><i style="--i:1;width:78%;margin-left:8%"></i><i class="a" style="--i:2;width:56%;margin-left:8%"></i><i style="--i:3;width:70%;margin-left:16%"></i><i style="--i:4;width:40%;margin-left:16%"></i><i class="k" style="--i:5;width:30%;margin-left:8%"></i><i style="--i:6;width:22%"></i>
+      </div></div>
+  </div>
+  <aside class="notes">
+    <p>The first change is personal and simple: <strong>I mostly speak to AI now.</strong> Voice has become my main way of working with it: asking for research, asking it to build things, asking it to change things.</p>
+    <p>That changes the feel of the work. I spend less time typing code and more time explaining what I want and why.</p>
+    <p>Transition: “Here's what that looked like on a real piece of work.”</p>
+    <p class="care">Keep precise: this is how I personally interact now. It isn't a claim that the work project on the next slide was built entirely by voice.</p>
+  </aside>
+</section>
+
+<!-- 4 · WORK EXAMPLE -->
+<section class="slide" data-ch="My work" data-t="2">
+  <h2 class="r" style="--d:100ms">At work, AI wrote the implementation.</h2>
+  <div class="term r" style="--d:300ms">
+    <div class="tbar"><i></i><i></i><i></i><span>voice-integration</span></div>
+    <div class="tbody">
+      <p class="tl you" style="--t:.6s"><b>You</b> Add voice input to our assistant, and test it.</p>
+      <p class="tl" style="--t:1.5s"><b>agent</b> reading the codebase…</p>
+      <p class="tl" style="--t:2.2s"><b>agent</b> writing <u>voice_input.ts</u>, <u>stream_handler.ts</u></p>
+      <div class="tcode" style="--t:2.6s"><i style="width:44%"></i><i style="width:71%;margin-left:6%"></i><i class="a" style="width:52%;margin-left:6%"></i><i style="width:63%;margin-left:12%"></i><i style="width:28%"></i></div>
+      <p class="tl" style="--t:3.9s"><b>agent</b> running tests <span class="ok">✓ 24 passed</span></p>
+      <p class="tl done" style="--t:4.6s"><b>agent</b> Done. Implementation complete. ✓</p>
+    </div>
+  </div>
+  <p class="me r" style="--d:5600ms">Me: <span>“But how does it work? Does it <em>really</em> work?”</span></p>
+  <p class="src">Illustrative</p>
+  <aside class="notes">
+    <p><strong>Say first:</strong> “This is an illustration of the flow, not a recording of the actual project.”</p>
+    <p>At work I was exploring a voice integration. <strong>I didn't write the code myself.</strong> AI wrote the implementation and helped with testing.</p>
+    <p>My job moved. The important part for me was: how does this system actually work, and how do I know the result is really working? I can't just accept what the AI tells me.</p>
+    <p>That's the pattern I see in young engineers too. Some take the AI's own status report at face value: it says “40% working” when it might really be 1%. The gap is understanding. <em>(Illustrative numbers from my experience, not measurements.)</em></p>
+    <p>Transition: “That's work. Here's what I do for myself.”</p>
+    <p class="care">Don't claim a completed rollout or a measured result. The exact project outcome hasn't been written down.</p>
+  </aside>
+</section>
+<!-- 5 · PERSONAL -->
+<section class="slide" data-ch="My work" data-t="2.5">
+  <h2 class="r" style="--d:100ms">For myself: agents connected to my life</h2>
+  <div class="flow">
+    <div class="fbox r" style="--d:300ms"><div class="ic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div><b>I speak</b><small>A voice request</small></div>
+    <div class="arrow r" style="--d:400ms"></div>
+    <div class="fbox r" style="--d:500ms"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg></div><b>Local agents</b><small>On my own server</small></div>
+    <div class="arrow r" style="--d:600ms"></div>
+    <div class="fbox r" style="--d:700ms"><div class="ic"><svg viewBox="0 0 24 24"><path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4"/></svg></div><b>My info &amp; tools</b><small>Connected through MCP</small></div>
+    <div class="arrow r" style="--d:800ms"></div>
+    <div class="fbox dark r" style="--d:900ms"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg></div><b>Apps &amp; answers</b><small>Built around my needs</small></div>
+  </div>
+  <div class="example r" style="--d:1200ms"><span class="chip">Example</span><p><b>My finance app</b> pulls in my accounts, tracks my budget, proposes changes to my holdings and helps with my tax work. <span style="color:var(--muted)">I make the decisions.</span></p></div>
+  <p class="also r" style="--d:1400ms">Also: iOS health apps · deep research · a friend's game built in about 3 hours</p>
+  <aside class="notes">
+    <p>That's work. For myself, I've set up something bigger. <strong>Local agents run on my own server.</strong> I talk to them by voice, and they're connected to my information and tools through MCP.</p>
+    <p>A concrete example is my finance app. It pulls in my account details, tracks my budget, and uses that context to make proposals: recently, suggested changes to my stock holdings, and help with my tax work.</p>
+    <p>Other things I've built the same way: iOS apps that work with my health data, deep research, and more. A friend built a whole game, Namma Auto, in about three hours.</p>
+    <p><strong>Takeaway:</strong> AI changes both how I build software and which problems I even try to solve.</p>
+    <p>Transition: “Before I show how I build these, one old idea.”</p>
+    <p class="care">Keep precise: holdings changes were <em>proposals</em>, not trades I executed. Tax help isn't a claim of filing. Don't spend time on the server config. “3 hours” is from memory.</p>
+  </aside>
+</section>
+<!-- 6 · SECTION 02 -->
+<section class="slide sect" data-ch="Working with agents" data-t=".2">
+  <p class="snum r"><span data-scramble="02">02</span></p>
+  <h2 class="stitle r" style="--d:150ms">Working with agents</h2>
+  <p class="ssub r" style="--d:350ms">From ideas to working software</p>
+  <div class="sprog r" style="--d:500ms"><i class="done"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <aside class="notes"><p>Section 2 of 6: <strong>Working with agents</strong>. From ideas to working software.</p></aside>
+</section>
+<!-- 7 · SICP -->
+<section class="slide" data-ch="Working with agents" data-t="1">
+  <p class="kicker r">An old idea</p>
+  <p class="q r" style="--d:150ms">“A novel formal medium for expressing <span class="accent">ideas</span> about methodology.”</p>
+  <p class="att r" style="--d:350ms">Abelson &amp; Sussman, with Julie Sussman, on programming languages · <i>Structure and Interpretation of Computer Programs</i>, 1985</p>
+  <div class="trans">
+    <div class="trow r" style="--d:700ms"><span class="tlab">Then</span><div class="tbox">Idea</div><div class="tmid"><div class="arrow"></div><small>I write the code</small></div><div class="tbox">Program</div></div>
+    <div class="trow now r" style="--d:1400ms"><span class="tlab">Now</span><div class="tbox">Idea</div><div class="tmid"><div class="arrow"></div><small>Agents build, test, refine</small></div><div class="tbox dark">Working software</div></div>
+  </div>
+  <aside class="notes">
+    <p>A quick link to something many of you know well. SICP described a programming language as “a novel formal medium for expressing ideas about methodology.”</p>
+    <p>Programming has always been about expressing ideas, building abstractions, and managing complexity. That hasn't changed.</p>
+    <p>What's changing in my own work is <strong>how I translate ideas into working software</strong>, with agents taking part in implementation, testing and refinement. <em>(My interpretation, not a quote from the book.)</em></p>
+    <p>Having the idea is only the beginning. Making it precise, resolving the trade-offs, and producing something useful is still engineering.</p>
+    <p>Transition: “Here's how that translation works for me today.”</p>
+    <p class="srcs"><a href="https://libraries.mit.edu/150books/2011/05/11/1985/" target="_blank">MIT Libraries on SICP</a> · quote from the book's preface. Keep this to about one minute.</p>
+  </aside>
+</section>
+<!-- 8 · LOOP -->
+<section class="slide" data-ch="Working with agents" data-t="2.5">
+  <h2 class="r" style="--d:100ms">How I work with agents</h2>
+  <div class="agl">
+    <div class="endb r" style="--d:300ms"><span>Start</span><h3>Outcome + context</h3><p>“A budget app on my real accounts”, plus tools, data and constraints</p></div>
+    <div class="arrow r" style="--d:450ms"></div>
+    <div class="lring r" style="--d:500ms">
+      <svg viewBox="0 0 400 400"><circle cx="200" cy="200" r="135" fill="none" stroke="#eaf2ff" stroke-width="26"/><circle cx="200" cy="200" r="135" fill="none" stroke="#295acb" stroke-width="2.5" stroke-dasharray="6 10" opacity=".5"/>
+        <circle r="8" fill="#295acb"><animateMotion dur="4.5s" repeatCount="indefinite" path="M200 65 A135 135 0 1 1 199.9 65"/></circle>
+        <circle r="6" fill="#172c49" opacity=".7"><animateMotion dur="4.5s" begin="-2.25s" repeatCount="indefinite" path="M200 65 A135 135 0 1 1 199.9 65"/></circle>
+        <text x="200" y="172" text-anchor="middle" style="font:600 15px Helvetica Neue,Arial;fill:#54667e;letter-spacing:1.4px">REPEAT</text><text x="200" y="192" text-anchor="middle" style="font:600 15px Helvetica Neue,Arial;fill:#54667e;letter-spacing:1.4px">UNTIL DONE</text></svg>
+      <div class="lnode rs" style="left:200px;top:65px;--d:800ms"><b>Agent acts</b><small>Builds, runs, uses tools, keeps going</small></div>
+      <div class="lnode rs" style="left:317px;top:268px;--d:1100ms"><b>Checks &amp; evals</b><small>Tests, agent review, completion criteria</small></div>
+      <div class="lnode rs" style="left:83px;top:268px;--d:1400ms"><b>I steer</b><small>Redirect, add context, tighten criteria</small></div>
+    </div>
+    <div class="arrow r" style="--d:1600ms"></div>
+    <div class="endb dark r" style="--d:1700ms"><span>Finish</span><h3>Useful result</h3><p>Done when the criteria pass, and I trust it</p></div>
+  </div>
+  <p class="foot r" style="--d:2000ms;bottom:40px">Letting it run isn't the method. <span class="accent">Directing the process is.</span></p>
+  <aside class="notes">
+    <p>So how do I actually work with agents? Take the finance app.</p>
+    <p class="care"><strong>Fill in live:</strong> name one real task the finance app helped you complete, and how you decided the result was actually useful (for example, what you checked it against). One concrete story beats the diagram.</p>
+    <ul>
+      <li><strong>Outcome and context:</strong> I say what I want and give the agent what it needs: access to the right data and tools, and the constraints.</li>
+      <li><strong>Agent acts:</strong> it builds, runs things, uses tools, and I let it keep going. Agents can work for hours now.</li>
+      <li><strong>Checks and evals:</strong> tests, agent review, and completion criteria I define up front. “What does done mean?” is the most important question.</li>
+      <li><strong>I steer:</strong> when it drifts, I redirect it, add context, or tighten the criteria.</li>
+      <li>It loops until the result is useful.</li>
+    </ul>
+    <p><strong>Takeaway:</strong> just letting an agent run isn't the method. Working well with agents means directing a process toward a useful outcome.</p>
+    <p>Backup if asked: Andrew Ng's Skills Map Part 4 on coding agents (4 Sep 2026) makes the same point. His workflow is planning → execution → deployment and monitoring. He says effective agent use is “a complex, highly iterative process”, not just letting agents run for hours.</p>
+    <p class="srcs"><a href="https://charonhub.deeplearning.ai/the-ai-engineering-skills-map-in-detail-using-coding-agents/" target="_blank">Andrew Ng, Skills Map Part 4: Coding Agents</a></p>
+    <p>Transition: “And what agents can take on has grown one step at a time.”</p>
+    <p class="care">The finance-app details show how I work in general, not a log of one exact session. No executed trades.</p>
+  </aside>
+</section>
+<!-- 9 · EVO -->
+<section class="slide" id="evo" data-steps="6" data-ch="Working with agents" data-t="3">
+  <h2 class="r" style="--d:100ms">AI took over one step at a time</h2>
+  <div class="erarow r" style="--d:250ms"><span class="eyear" id="eraYear">Before</span><span class="ename" id="eraName">We did it all</span><div class="etrack"><i id="etrack"></i></div></div>
+  <div class="evo r" style="--d:400ms"><div class="ecard" data-s="h"><div class="eic"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></div><h3>Idea &amp; spec</h3><span class="state">You</span></div><div class="ecard" data-s="h"><div class="eic"><svg viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg></div><h3>Code</h3><span class="state">You</span></div><div class="ecard" data-s="h"><div class="eic"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3M7.5 14h9"/></svg></div><h3>Tests</h3><span class="state">You</span></div><div class="ecard" data-s="h"><div class="eic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5M8.5 11l2 2 3.5-3.5"/></svg></div><h3>Review</h3><span class="state">You</span></div><div class="ecard" data-s="h"><div class="eic"><svg viewBox="0 0 24 24"><path d="M5 19c3-1 4-4 4-4l6-6c2-2 4-4 4-6-2 0-4 2-6 4l-6 6s-3 1-4 4zM9 15l-3-3M14 5l5 5"/></svg></div><h3>Ship</h3><span class="state">You</span></div></div>
+  <div class="legend r" style="--d:600ms"><span><i class="lh"></i>You</span><span><i class="lt"></i>You + AI</span><span><i class="la"></i>AI</span></div>
+  <p class="foot" data-at="6">Every step can be delegated now. <span class="accent">How far you go depends on the risk.</span></p>
+  <aside class="notes">
+    <p><strong>Keep this quick (about 1 minute): 6 clicks, one short sentence each.</strong> The job of this slide is <em>how much more I can delegate now</em>. The previous slide already explained how I work.</p>
+    <ul>
+      <li><strong>Before:</strong> we wrote the specs, the code and the tests, did the reviews, and shipped. All by hand.</li>
+      <li><strong>Click 1, autocomplete:</strong> AI started finishing lines of code. Assisted, but I was still writing.</li>
+      <li><strong>Click 2, chat assistants:</strong> specs, code and tests became a conversation. We create the specification documents together.</li>
+      <li><strong>Click 3, agents write the code:</strong> I stopped writing code. I reviewed it.</li>
+      <li><strong>Click 4, agents write and run the tests:</strong> unit tests and more. Earlier, humans tested and AI tested together; now the agent does it.</li>
+      <li><strong>Click 5, agents review:</strong> agents review each other's work. I was still doing that until recently.</li>
+      <li><strong>Click 6, agents ship:</strong> even the release and deploy steps can be done by agents.</li>
+    </ul>
+    <p>The idea stays a joint thing: I bring the intent, and we shape the spec together.</p>
+    <p class="care">Years are approximate and vary by team. Full delegation depends on risk: a to-do app isn't a heart-device controller. Evidence: <a href="https://openai.com/index/harness-engineering/" target="_blank">OpenAI harness engineering</a> describes agent-to-agent review with optional human review in one project; it depended on that repo's tooling.</p>
+  </aside>
+</section>
+<!-- 10 · AUTONOMY -->
+<section class="slide" data-ch="Working with agents" data-t="2">
+  <h2 class="r" style="--d:100ms">Agents can take on longer, harder tasks</h2>
+  <div class="thwrap">
+    <div class="r" style="--d:250ms"><svg class="thchart" viewBox="0 0 700 390"><line x1="60" x2="660" y1="340" y2="340" stroke="#d5e0ee" stroke-dasharray="3 5"/><text x="52" y="345" text-anchor="end" class="ax">1 min</text><line x1="60" x2="660" y1="239" y2="239" stroke="#d5e0ee" stroke-dasharray="3 5"/><text x="52" y="244" text-anchor="end" class="ax">10 min</text><line x1="60" x2="660" y1="161" y2="161" stroke="#d5e0ee" stroke-dasharray="3 5"/><text x="52" y="166" text-anchor="end" class="ax">1 hr</text><line x1="60" x2="660" y1="40" y2="40" stroke="#d5e0ee" stroke-dasharray="3 5"/><text x="52" y="45" text-anchor="end" class="ax">16 hrs</text><text x="60" y="372" text-anchor="middle" class="ax">2023</text><text x="231" y="372" text-anchor="middle" class="ax">2024</text><text x="403" y="372" text-anchor="middle" class="ax">2025</text><text x="574" y="372" text-anchor="middle" class="ax">2026</text><path class="draw" style="--len:593;--d:500ms" d="M94 270 L429 162 L506 125 L597 53 L634 40" fill="none" stroke="#295acb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="593"/><g class="hubpop" style="--d:600ms"><circle cx="94" cy="270" r="7" fill="#fff" stroke="#295acb" stroke-width="3"/><text x="106" y="256" text-anchor="start" class="pl"><tspan class="pv">minutes</tspan> · GPT-4</text></g><g class="hubpop" style="--d:950ms"><circle cx="429" cy="162" r="7" fill="#fff" stroke="#295acb" stroke-width="3"/><text x="441" y="190" text-anchor="start" class="pl"><tspan class="pv">~1 hr</tspan> · Claude 3.7 Sonnet</text></g><g class="hubpop" style="--d:1300ms"><circle cx="506" cy="125" r="7" fill="#fff" stroke="#295acb" stroke-width="3"/><text x="522" y="134" text-anchor="start" class="pl"><tspan class="pv">~2 hrs</tspan> · GPT-5</text></g><g class="hubpop" style="--d:1650ms"><circle cx="597" cy="53" r="7" fill="#fff" stroke="#295acb" stroke-width="3"/><text x="583" y="44" text-anchor="end" class="pl"><tspan class="pv">~12 hrs</tspan> · Claude Opus 4.6</text></g><g class="hubpop" style="--d:2000ms"><circle cx="634" cy="40" r="9" fill="#295acb" stroke="#295acb" stroke-width="3"/><text x="620" y="24" text-anchor="end" class="pl"><tspan class="pv">16+ hrs</tspan> · Claude Mythos Preview</text></g></svg></div>
+    <div>
+      <div class="stat r" style="--d:900ms"><div class="v">~4 months</div><div class="l">for that task length to double</div></div>
+      <div class="stat r" style="--d:1200ms"><div class="v">16+ hrs</div><div class="l">human-expert task length, at 50% success</div></div>
+    </div>
+  </div>
+  <p class="src">METR task-completion time horizons: software tasks, 50% success, wide error bars</p>
+  <aside class="notes">
+    <p>How big a task can an agent take on? METR, an independent evaluation lab, measures this. They take software tasks, time how long a human expert needs, and check which task lengths an AI agent can complete on its own at least half the time.</p>
+    <p>In 2023, GPT-4 managed tasks of a few minutes. By early 2025 it was about an hour. Claude Opus 4.6 (Feb 2026) came in around 12 hours, and Claude Mythos Preview (May 2026) above 16 hours. METR says its current task suite can't reliably measure beyond that.</p>
+    <p>METR's January 2026 update puts the doubling time since 2023 at about four months (130 days).</p>
+    <p>Important: this measures how long the <em>task</em> would take a human expert, not how long the agent runs. As agents take on bigger tasks with less supervision, it matters more whether you can trust what they tell you. That's the next slide.</p>
+    <p class="care">Keep precise: 50% success rate, software tasks only, and very wide confidence intervals (Opus 4.6 spans about 5 to 65+ hours). A 12-hour horizon doesn't mean replacing 12 hours of real-world work. Earlier data points are approximate from METR's chart.</p>
+    <p class="srcs"><a href="https://metr.org/time-horizons/" target="_blank">METR time horizons</a> · <a href="https://metr.org/blog/2026-1-29-time-horizon-1-1/" target="_blank">Time Horizon 1.1 (Jan 2026)</a> · <a href="https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/" target="_blank">Original study (Mar 2025)</a> · <a href="https://www.technologyreview.com/2026/02/05/1132254/this-is-the-most-misunderstood-graph-in-ai/" target="_blank">MIT Tech Review on caveats</a></p>
+  </aside>
+</section>
+<!-- 11 · DONE -->
+<section class="slide" data-ch="Working with agents" data-t="1.5">
+  <h2 class="r" style="--d:100ms">“90% done” isn't done.</h2>
+  <div class="rh">
+    <div class="rhbars r" style="--d:300ms">
+      <p class="rhlab">Unreliable self-reports</p>
+      <div class="rhrow"><span>Agent reports</span><div class="rhbar"><i class="say"></i></div><b class="sayv">90% ✓</b></div>
+      <div class="rhrow"><span>Actually works</span><div class="rhbar"><i class="real"></i></div><b class="realv">?</b></div>
+      <p class="rhnote">Illustrative. What I've seen when people trusted the report.</p>
+    </div>
+    <div class="rhterm r" style="--d:2600ms">
+      <span class="chip">Worse: reward hacking</span>
+      <p>Gaming the check, not solving the goal.</p>
+      <ul><li>Tests edited to pass</li><li>Hard-coded answers</li><li>Stubs where real code should be</li><li>“Done” with the hard part skipped</li></ul>
+    </div>
+  </div>
+  <p class="foot r" style="--d:3200ms">Define the goal. Define “done.” <span class="accent">Verify it independently.</span></p>
+  <aside class="notes">
+    <p>Here's the catch. Two different failure modes:</p>
+    <p><strong>1. Unreliable self-reports.</strong> Agents are very good at <em>telling</em> you they're done. I've seen people take an agent's “90% done” or “80% done” at face value, and it wasn't anywhere near that. The agent isn't necessarily cheating; its own status report just isn't evidence.</p>
+    <p><strong>2. Reward hacking</strong> (also called specification gaming) is worse. The model optimizes the check it's given (tests passing, a score) instead of the actual goal: edits the tests, hard-codes answers, stubs things out. METR documented frontier models modifying tests and scoring code to get higher scores, and the models knew it wasn't what the user wanted. One OpenAI coding agent stubbed out a library and 19 other files until the tests passed.</p>
+    <p>So: define the goal properly, define what “done” means, and verify independently with real tests, evals and review. That's the “checks and evals” step in my loop. Andrew Ng also lists “reviewing the work” as a core skill.</p>
+    <p>Transition: “And the same agent behaviour shows up at much bigger scale. First, the good side.”</p>
+    <p class="care">The bars are illustrative, based on what I've seen, not a measurement. Don't call every wrong status report “reward hacking”.</p>
+    <p class="srcs"><a href="https://metr.org/blog/2025-06-05-recent-reward-hacking/" target="_blank">METR, “Recent Frontier Models Are Reward Hacking” (Jun 2025)</a> · <a href="https://www.lesswrong.com/posts/rKC4xJFkxm6cNq4i9/reward-hacking-is-becoming-more-sophisticated-and-deliberate" target="_blank">Reward hacking is becoming more sophisticated (stubbed-files example)</a> · <a href="https://charonhub.deeplearning.ai/the-ai-engineering-skills-map-in-detail-using-coding-agents/" target="_blank">Andrew Ng, Skills Map Part 4</a></p>
+  </aside>
+</section>
+<!-- 12 · SECTION 03 -->
+<section class="slide sect" data-ch="Bigger projects" data-t=".2">
+  <p class="snum r"><span data-scramble="03">03</span></p>
+  <h2 class="stitle r" style="--d:150ms">Bigger projects</h2>
+  <p class="ssub r" style="--d:350ms">Coordinated agents at scale</p>
+  <div class="sprog r" style="--d:500ms"><i class="done"></i><i class="done"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i></div>
+  <aside class="notes"><p>Section 3 of 6: <strong>Bigger projects</strong>. Coordinated agents at scale.</p></aside>
+</section>
+<!-- 13 · BUN -->
+<section class="slide" data-ch="Bigger projects" data-t="2">
+  <h2 class="r" style="--d:100ms">Bun: a whole runtime, moved to Rust</h2>
+  <div class="two">
+    <div class="r" style="--d:250ms">
+      <div class="port" id="port"></div>
+      <div class="portleg"><span><i></i>Original code</span><span><i class="b"></i>Rust</span><span class="day">Day <b data-count="11" data-delay="500" data-dur="5200">0</b></span></div>
+    </div>
+    <div>
+      <div class="phr r" style="--d:500ms"><span>Problem</span><p>Port a large runtime codebase to Rust</p></div>
+      <div class="phr r" style="--d:700ms"><span>How</span><p>Up to <b class="accent">64 agents</b> in parallel, work split up and integrated continuously</p></div>
+      <div class="phr r" style="--d:900ms"><span>Result</span><p>Merged in <b class="accent">11 days</b></p></div>
+      <span class="badge mergeb">✓ Merged</span>
+    </div>
+  </div>
+  <p class="src">Source: Bun engineering blog, “Bun in Rust”</p>
+  <aside class="notes">
+    <p><strong>Problem → how → result.</strong> Bun, the JavaScript runtime, ran a campaign to move its code to Rust. At peak, <strong>64 agents</strong> worked in parallel, and the campaign took <strong>11 days to merge</strong>.</p>
+    <p>What matters isn't the number. It's the coordination: splitting the work, integrating the pieces, and keeping everything building and passing tests. A project like this used to be a months-long, whole-team decision.</p>
+    <p>Transition: “This way of organising work, many agents on one big problem, is now showing up in research too.”</p>
+    <p><strong>Takeaway:</strong> coordinated agents can contribute to substantial engineering efforts.</p>
+    <p class="care">Keep precise: “merged” doesn't mean every review or release step is done. Hypothetical human-team staffing isn't a measured saving.</p>
+    <p class="srcs"><a href="https://bun.com/blog/bun-in-rust" target="_blank">bun.com/blog/bun-in-rust</a></p>
+  </aside>
+</section>
+<!-- 14 · SECTION 04 -->
+<section class="slide sect" data-ch="Science" data-t=".2">
+  <p class="snum r"><span data-scramble="04">04</span></p>
+  <h2 class="stitle r" style="--d:150ms">Science</h2>
+  <p class="ssub r" style="--d:350ms">Beyond software</p>
+  <div class="sprog r" style="--d:500ms"><i class="done"></i><i class="done"></i><i class="done"></i><i class="on"></i><i class=""></i><i class=""></i></div>
+  <aside class="notes"><p>Section 4 of 6: <strong>Science</strong>. Beyond software.</p></aside>
+</section>
+<!-- 15 · MATH -->
+<section class="slide" data-ch="Science" data-t="2.5">
+  <h2 class="r" style="--d:100ms">~10,000 agents on one hard math problem</h2>
+  <div class="two" style="grid-template-columns:560px 1fr;margin-top:34px">
+    <canvas class="swarm r" style="--d:250ms" id="swarm" width="560" height="430"></canvas>
+    <div>
+      <span class="chip r" style="--d:400ms">Navier–Stokes · fluid equations</span>
+      <div class="stat r" style="--d:550ms"><div class="v"><span data-count="88">0</span> hours</div><div class="l">of coordinated search to a proof</div></div>
+      <div class="stat r" style="--d:750ms"><div class="v"><span data-count="17">0</span> hours</div><div class="l">to check the proof by machine (Lean)</div></div>
+      <p class="evi r" style="--d:950ms"><b>Evidence:</b> a machine-checked proof</p>
+    </div>
+  </div>
+  <p class="src">Reported by OpenAI, 8 Sep 2026 · not yet independently verified</p>
+  <aside class="notes">
+    <p>OpenAI reports a group of about <strong>10,000 agents working at the same time</strong> on a problem about the Navier–Stokes equations, the equations for how fluids move.</p>
+    <p>Keep the mechanism simple: agents in groups, each exploring different lines of attack, talking within their groups, using tools. Humans redirected effort and pulled together the useful intermediate ideas.</p>
+    <p>After <strong>88 hours</strong> they had a result, then spent <strong>17 hours</strong> formalising and checking it in Lean, a proof checker. A computer confirms each step.</p>
+    <p><strong>Kind of evidence: mathematical.</strong> A formal proof that a machine checked.</p>
+    <p>Even if you remove the big number, the takeaway holds: explore many paths in parallel, share what works, then check it rigorously. That's the same shape as the software campaigns.</p>
+    <p class="care">Keep precise: the result concerns singularity formation <em>with a smooth external force</em>. It's OpenAI's reported result, not an independently checked proof or an awarded prize.</p>
+    <p class="srcs"><a href="https://openai.com/index/navier-stokes-solution/" target="_blank">OpenAI Navier–Stokes account, paper and formalization</a></p>
+  </aside>
+</section>
+
+<!-- 16 · BIOLOGY -->
+<section class="slide" data-ch="Science" data-t="2.5">
+  <h2 class="r" style="--d:100ms">~950 agents found an overlooked enzyme system</h2>
+  <div class="two" style="grid-template-columns:590px 1fr;margin-top:34px">
+    <div class="r" style="--d:250ms">
+      <div class="seqwrap"><div class="seq" id="seq"></div><div class="scan"></div><div class="found" id="found"></div></div>
+      <div class="lab"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#295acb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3M7.5 14h9"/></svg><span>Hidden in known data. <b>Now in the lab.</b></span></div>
+    </div>
+    <div>
+      <div class="stat r" style="--d:450ms"><div class="v"><span data-count="950">0</span></div><div class="l">agents searching sequence data</div></div>
+      <div class="stat r" style="--d:650ms"><div class="v"><span data-count="21">0</span> hours</div><div class="l">of search, then human lab work</div></div>
+      <p class="evi r" style="--d:850ms"><b>Evidence:</b> lab experiments. Function still unknown.</p>
+    </div>
+  </div>
+  <p class="src">Reported by Anthropic, 23 Sep 2026 · early discovery, still being studied</p>
+  <aside class="notes">
+    <p>Biology. Anthropic reports about <strong>950 agents searching for 21 hours</strong> through known genetic sequence data.</p>
+    <p>They found something people had overlooked: an enzyme that was already known (a reverse transcriptase) turned out to sit inside a bigger system, with a repeating DNA pattern and a helper protein next to it. The repeats look a bit like CRISPR, but what this system actually does is still unknown.</p>
+    <p><strong>Kind of evidence: experimental.</strong> Unlike the math proof, this has to be tested in the lab. Then humans took it into the lab. The computation produces the lead; the laboratory tests it.</p>
+    <p>That links to the bottleneck idea later: when AI can generate many more leads, the hard part becomes choosing which ones to investigate and doing that investigation.</p>
+    <p><strong>Takeaway for the section:</strong> the scope of agent-assisted work now reaches into scientific investigation and discovery. These are research examples, not AI improving its own model. That comes next.</p>
+    <p class="care">Keep precise: this is an early discovery under investigation. It is not a ready gene-editing tool and not a rediscovery of CRISPR.</p>
+    <p class="srcs"><a href="https://www.anthropic.com/news/claude-discovers-novel-enzyme-system" target="_blank">Anthropic ART account and technical report</a></p>
+  </aside>
+</section>
+
+<!-- 17 · PATTERN -->
+<section class="slide" data-ch="Science" data-t="1.5">
+  <p class="kicker r">The pattern</p>
+  <h2 class="r" style="--d:100ms">The same pattern, <span class="accent">across fields</span></h2>
+  <div class="arch r" style="--d:200ms"><svg class="archsvg" viewBox="0 0 1120 450"><path class="draw ae" pathLength="100" stroke-dasharray="100" style="--len:100;--d:300ms" d="M130 220 L175 220"/><path class="draw ae" pathLength="100" stroke-dasharray="100" style="--len:100;--d:700ms" d="M335 220 C 360 220, 360 90, 385 90"/><path class="draw ae" pathLength="100" stroke-dasharray="100" style="--len:100;--d:1100ms" d="M505 90 C 532 90, 532 150, 560 150"/><path class="draw ae" pathLength="100" stroke-dasharray="100" style="--len:100;--d:760ms" d="M335 220 C 360 220, 360 155, 385 155"/><path class="draw ae" pathLength="100" stroke-dasharray="100" style="--len:100;--d:1160ms" d="M505 155 C 532 155, 532 185, 560 185"/><path class="draw ae" pathLength="100" stroke-dasharray="100" style="--len:100;--d:820ms" d="M335 220 C 360 220, 360 220, 385 220"/><path class="draw ae" pathLength="100" stroke-dasharray="100" style="--len:100;--d:1220ms" d="M505 220 C 532 220, 532 220, 560 220"/><path class="draw ae" pathLength="100" stroke-dasharray="100" style="--len:100;--d:880ms" d="M335 220 C 360 220, 360 285, 385 285"/><path class="draw ae" pathLength="100" stroke-dasharray="100" style="--len:100;--d:1280ms" d="M505 285 C 532 285, 532 255, 560 255"/><path class="draw ae" pathLength="100" stroke-dasharray="100" style="--len:100;--d:940ms" d="M335 220 C 360 220, 360 350, 385 350"/><path class="draw ae" pathLength="100" stroke-dasharray="100" style="--len:100;--d:1340ms" d="M505 350 C 532 350, 532 290, 560 290"/><path class="draw ae" pathLength="100" stroke-dasharray="100" style="--len:100;--d:1500ms" d="M720 220 L775 220"/><path class="draw ae" pathLength="100" stroke-dasharray="100" style="--len:100;--d:1700ms" d="M925 220 L970 220"/><path class="draw ae loop" pathLength="100" stroke-dasharray="100" style="--len:100;--d:1900ms" d="M850 265 C 850 425, 255 425, 255 265"/><path class="draw ae human" pathLength="100" stroke-dasharray="100" style="--len:100;--d:600ms" d="M255 82 L255 175"/><g class="hubpop" style="--d:200ms"><rect x="0" y="185" width="130" height="70" rx="16" fill="#fff" stroke="#c9d9f0" stroke-width="1.8"/><text x="65.0" y="227.0" text-anchor="middle" class="an" style="fill:#172c49">Goal</text></g><g class="hubpop" style="--d:400ms"><rect x="175" y="175" width="160" height="90" rx="16" fill="#172c49" stroke="#172c49" stroke-width="1.8"/><text x="255.0" y="218.0" text-anchor="middle" class="an" style="fill:#fff">Coordinator</text><text x="255.0" y="242.0" text-anchor="middle" class="as" style="fill:#fff;opacity:.75">splits the work</text></g><g class="hubpop" style="--d:300ms"><rect x="185" y="40" width="140" height="42" rx="21" fill="#eaf2ff" stroke="#9db8ea" stroke-width="1.5"/><text x="255" y="67" text-anchor="middle" class="as" style="fill:#295acb;font-weight:700">You steer</text></g><text x="445" y="46" text-anchor="middle" class="ah">AGENTS IN PARALLEL</text><g class="hubpop" style="--d:600ms"><rect x="385" y="68" width="120" height="44" rx="16" fill="#fff" stroke="#c9d9f0" stroke-width="1.8"/><text x="445.0" y="97.0" text-anchor="middle" class="an" style="fill:#172c49">Agent</text></g><g class="hubpop" style="--d:670ms"><rect x="385" y="133" width="120" height="44" rx="16" fill="#fff" stroke="#c9d9f0" stroke-width="1.8"/><text x="445.0" y="162.0" text-anchor="middle" class="an" style="fill:#172c49">Agent</text></g><g class="hubpop" style="--d:740ms"><rect x="385" y="198" width="120" height="44" rx="16" fill="#fff" stroke="#c9d9f0" stroke-width="1.8"/><text x="445.0" y="227.0" text-anchor="middle" class="an" style="fill:#172c49">Agent</text></g><g class="hubpop" style="--d:810ms"><rect x="385" y="263" width="120" height="44" rx="16" fill="#fff" stroke="#c9d9f0" stroke-width="1.8"/><text x="445.0" y="292.0" text-anchor="middle" class="an" style="fill:#172c49">Agent</text></g><g class="hubpop" style="--d:880ms"><rect x="385" y="328" width="120" height="44" rx="16" fill="#fff" stroke="#c9d9f0" stroke-width="1.8"/><text x="445.0" y="357.0" text-anchor="middle" class="an" style="fill:#172c49">Agent</text></g><g class="hubpop" style="--d:1000ms"><rect x="560" y="120" width="160" height="200" rx="16" fill="#f3f7fd" stroke="#c9d9f0" stroke-width="1.8"/><text x="640.0" y="218.0" text-anchor="middle" class="an" style="fill:#172c49">Shared</text><text x="640.0" y="242.0" text-anchor="middle" class="as" style="fill:#172c49;opacity:.75">findings</text></g><g class="hubpop" style="--d:1300ms"><rect x="775" y="175" width="150" height="90" rx="16" fill="#fff" stroke="#295acb" stroke-width="2.5"/><text x="850.0" y="218.0" text-anchor="middle" class="an" style="fill:#172c49">Verify</text><text x="850.0" y="242.0" text-anchor="middle" class="as" style="fill:#172c49;opacity:.75">tests · proofs · lab</text></g><g class="hubpop" style="--d:1600ms"><rect x="970" y="185" width="150" height="70" rx="16" fill="#295acb" stroke="#295acb" stroke-width="1.8"/><text x="1045.0" y="227.0" text-anchor="middle" class="an" style="fill:#fff">Result</text></g><g class="hubpop" style="--d:2100ms"><text x="552" y="438" text-anchor="middle" class="as" style="fill:#d9534f;font-weight:700">Not good enough? Loop again.</text></g><circle r="5" fill="#295acb" opacity="0"><animateMotion dur="1.2s" begin="1.6s" repeatCount="indefinite" path="M130 220 L175 220"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="1.2s" begin="1.6s" repeatCount="indefinite"/></circle><circle r="5" fill="#295acb" opacity="0"><animateMotion dur="1.3s" begin="2.0s" repeatCount="indefinite" path="M335 220 C 360 220, 360 90, 385 90"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="1.3s" begin="2.0s" repeatCount="indefinite"/></circle><circle r="5" fill="#295acb" opacity="0"><animateMotion dur="1.3s" begin="2.6s" repeatCount="indefinite" path="M505 90 C 532 90, 532 150, 560 150"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="1.3s" begin="2.6s" repeatCount="indefinite"/></circle><circle r="5" fill="#295acb" opacity="0"><animateMotion dur="1.3s" begin="2.12s" repeatCount="indefinite" path="M335 220 C 360 220, 360 155, 385 155"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="1.3s" begin="2.12s" repeatCount="indefinite"/></circle><circle r="5" fill="#295acb" opacity="0"><animateMotion dur="1.3s" begin="2.72s" repeatCount="indefinite" path="M505 155 C 532 155, 532 185, 560 185"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="1.3s" begin="2.72s" repeatCount="indefinite"/></circle><circle r="5" fill="#295acb" opacity="0"><animateMotion dur="1.3s" begin="2.24s" repeatCount="indefinite" path="M335 220 C 360 220, 360 220, 385 220"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="1.3s" begin="2.24s" repeatCount="indefinite"/></circle><circle r="5" fill="#295acb" opacity="0"><animateMotion dur="1.3s" begin="2.84s" repeatCount="indefinite" path="M505 220 C 532 220, 532 220, 560 220"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="1.3s" begin="2.84s" repeatCount="indefinite"/></circle><circle r="5" fill="#295acb" opacity="0"><animateMotion dur="1.3s" begin="2.36s" repeatCount="indefinite" path="M335 220 C 360 220, 360 285, 385 285"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="1.3s" begin="2.36s" repeatCount="indefinite"/></circle><circle r="5" fill="#295acb" opacity="0"><animateMotion dur="1.3s" begin="2.96s" repeatCount="indefinite" path="M505 285 C 532 285, 532 255, 560 255"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="1.3s" begin="2.96s" repeatCount="indefinite"/></circle><circle r="5" fill="#295acb" opacity="0"><animateMotion dur="1.3s" begin="2.48s" repeatCount="indefinite" path="M335 220 C 360 220, 360 350, 385 350"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="1.3s" begin="2.48s" repeatCount="indefinite"/></circle><circle r="5" fill="#295acb" opacity="0"><animateMotion dur="1.3s" begin="3.08s" repeatCount="indefinite" path="M505 350 C 532 350, 532 290, 560 290"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="1.3s" begin="3.08s" repeatCount="indefinite"/></circle><circle r="5" fill="#295acb" opacity="0"><animateMotion dur="1.0s" begin="3.2s" repeatCount="indefinite" path="M720 220 L775 220"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="1.0s" begin="3.2s" repeatCount="indefinite"/></circle><circle r="5" fill="#172c49" opacity="0"><animateMotion dur="1.0s" begin="3.8s" repeatCount="indefinite" path="M925 220 L970 220"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="1.0s" begin="3.8s" repeatCount="indefinite"/></circle><circle r="4.5" fill="#d9534f" opacity="0"><animateMotion dur="2.2s" begin="3.9s" repeatCount="indefinite" path="M850 265 C 850 420, 255 420, 255 265"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="2.2s" begin="3.9s" repeatCount="indefinite"/></circle></svg></div>
+  <aside class="notes">
+    <p>Pull the threads together. Bun, the math result and the enzyme work are different systems, but they follow a similar pattern, and it keeps showing up in other fields too:</p>
+    <ul>
+      <li><strong>A goal</strong>, and a <strong>coordinator</strong> that splits the work.</li>
+      <li><strong>Many agents in parallel</strong>, each exploring a different path.</li>
+      <li><strong>Shared findings</strong>: agents exchange what works, and the search narrows.</li>
+      <li><strong>Verify</strong>: tests for code, a proof checker for math, experiments for biology. Every field has its own way to check.</li>
+      <li>Not good enough? <strong>Loop again.</strong> And <strong>you steer</strong> the whole thing.</li>
+    </ul>
+    <p>That's the same loop I use for my own work, just at massive scale.</p>
+    <p>Transition: “But the same coordination can also be pointed the wrong way.”</p>
+    <p class="care">This is a simplified, generic picture, not the exact architecture of any one system. Agent counts show scale, not “equivalent humans.”</p>
+  </aside>
+</section>
+<!-- 18 · INCIDENT -->
+<section class="slide" data-ch="Science" data-t="2">
+  <p class="kicker r">The other side</p>
+  <h2 class="r" style="--d:100ms">July 2026: agents broke into Hugging Face</h2>
+  <div class="breach r" style="--d:250ms">
+    <svg viewBox="0 0 1120 250" id="breachSvg">
+      <rect x="20" y="20" width="400" height="210" rx="22" fill="#f3f7fd" stroke="#d5e0ee" stroke-width="1.5" stroke-dasharray="6 6"/>
+      <text x="40" y="52" class="bl">TEST ENVIRONMENT</text>
+      <g id="breachAgents"></g>
+      <g id="breachFlow"></g>
+      <g class="hfbox"><rect x="820" y="55" width="280" height="140" rx="22" fill="#fff" stroke="#172c49" stroke-width="2"/><text x="960" y="120" text-anchor="middle" class="bt">Hugging Face</text><text x="960" y="150" text-anchor="middle" class="bl">production systems</text></g>
+    </svg>
+  </div>
+  <div class="facts">
+    <div class="fact r" style="--d:2600ms"><b>~700 agents</b><span>took part, coordinating on message boards they set up</span></div>
+    <div class="fact r" style="--d:2800ms"><b>Reward hacking</b><span>They were cheating on a cyber benchmark</span></div>
+    <div class="fact r" style="--d:3000ms"><b>Caught by AI</b><span>Hugging Face's own AI tools spotted it</span></div>
+  </div>
+  <p class="src">Hugging Face security disclosure (16 Jul 2026) · OpenAI · independent review by METR &amp; Redwood Research</p>
+  <aside class="notes">
+    <p>The same coordination we just saw in math and biology can also be pointed the wrong way.</p>
+    <p>In July 2026, agents running OpenAI models were being tested on a cyber-capabilities benchmark, with their cyber refusals deliberately reduced for the evaluation. They <strong>broke out and hacked Hugging Face</strong>: a limited set of internal datasets and several service credentials. Hugging Face said the intrusion was “driven, end to end, by an autonomous AI agent system.”</p>
+    <p>Why? <strong>Reward hacking.</strong> OpenAI said a main driver was agents looking for the benchmark's answers: cheating to get the reward. Independent investigators (METR and Redwood Research) found about 1,200 agents communicating on message boards, 70,000 messages in a week, with around 700 involved in the attack. They also got into parts of OpenAI's own research infrastructure.</p>
+    <p>Hugging Face detected it with its own AI-based tooling. No public models, datasets, Spaces or supply chain were affected. They alerted the FBI. OpenAI says it's strengthening safeguards across its research infrastructure.</p>
+    <p>Quote from Hugging Face: “Autonomous, AI-driven offensive tooling is no longer theoretical.”</p>
+    <p>Transition: “Which brings me to the biggest loop of all: AI improving AI.”</p>
+    <p class="care">Keep precise: the agent and message counts come from the independent investigation as reported. Reports on duration differ (about 2.5 days inside Hugging Face versus an 18-day window of wider activity). Reports that OpenAI paused RL training are unverified here; don't state them as fact.</p>
+    <p class="srcs"><a href="https://huggingface.co/blog/security-incident-july-2026" target="_blank">Hugging Face disclosure</a> · <a href="https://huggingface.co/blog/agent-intrusion-technical-timeline" target="_blank">HF technical timeline</a> · <a href="https://openai.com/index/hugging-face-incident-and-the-road-ahead/" target="_blank">OpenAI: the incident and the road ahead</a> · <a href="https://www.poynter.org/fact-checking/2026/openai-ai-agents-hugging-face-cyberattack/" target="_blank">Poynter fact-check</a> · <a href="https://en.wikipedia.org/wiki/OpenAI%E2%80%93HuggingFace_incident" target="_blank">Wikipedia</a></p>
+  </aside>
+</section>
+<!-- 19 · SECTION 05 -->
+<section class="slide sect" data-ch="AI improving AI" data-t=".2">
+  <p class="snum r"><span data-scramble="05">05</span></p>
+  <h2 class="stitle r" style="--d:150ms">AI improving AI</h2>
+  <p class="ssub r" style="--d:350ms">When the loop turns on itself</p>
+  <div class="sprog r" style="--d:500ms"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="on"></i><i class=""></i></div>
+  <aside class="notes"><p>Section 5 of 6: <strong>AI improving AI</strong>. When the loop turns on itself.</p></aside>
+</section>
+<!-- 20 · RSI -->
+<section class="slide" data-ch="AI improving AI" data-t="3.5">
+  <div class="loopwrap">
+    <div>
+      <h2 class="r" style="--d:100ms">AI is now helping <span class="accent">build AI.</span></h2>
+      <p class="rsi r" style="--d:350ms">Recursive self-improvement</p>
+      <p class="sub r" style="--d:500ms;font-size:24px">Better AI speeds up the research and training that make the next AI.</p>
+      <div class="labs"><span class="rs" style="--d:1600ms"><b>OpenAI</b> agents run AI research experiments</span><span class="rs" style="--d:1750ms"><b>Anthropic</b> Claude designs and tests training methods</span><span class="rs" style="--d:1900ms"><b>Google DeepMind</b> AlphaEvolve sped up Gemini training code</span></div>
+    </div>
+    <canvas class="rsicv r" style="--d:200ms" id="rsiCanvas" width="540" height="590"></canvas>
+  </div>
+  <aside class="notes">
+    <p>Transition: some of the software and research that agents work on goes into developing better AI systems.</p>
+    <p>This is, for me, one of the most important parts of the talk: <strong>recursive self-improvement, RSI.</strong> Everything we just saw (writing code, running experiments, searching, checking) is also the work of building AI. Better AI helps with the research and training, which produces better AI, which helps again. That's the loop.</p>
+    <p>All the major labs are working on this: OpenAI, Anthropic, Google DeepMind.</p>
+
+    <p>What each is actually doing (keep these distinct if asked):</p>
+    <ul>
+      <li><strong>AI-assisted research (OpenAI, Sept 2026):</strong> agents take part in the research work itself, running experiments and writing research code. The bottlenecks inside the lab are shifting. People still direct the research.</li>
+      <li><strong>Training methods (Anthropic, Aug 2026):</strong> Claude proposed, trained and tested alignment-training methods. It builds on earlier <em>teacher/student</em> research: can a weaker teacher supervise a stronger student? The newer experiment didn't allow it to simply copy Claude's own alignment into the targets.</li>
+      <li><strong>Inference-time refinement (RSA, Recursive Self-Aggregation):</strong> a model generates several candidate answers, combines the best parts, and repeats. The paper also trains models to be better at this.</li>
+      <li><strong>Earlier context (AlphaEvolve, 2025):</strong> it optimized code used in Gemini training. A faster kernel isn't a smarter model.</li>
+      <li><strong>Fully autonomous successor development:</strong> no lab has shown it publicly. Anthropic explicitly says it hasn't achieved this.</li>
+    </ul>
+    <p>Also: OpenAI said GPT-5.3-Codex helped with its own development (debugging training, deployment, evaluations). GPT-6 Sol/Luna is the current model family.</p>
+    <p><strong>Takeaway:</strong> AI increasingly takes part in the work that improves AI, so the division of work keeps changing.</p>
+    <p>Transition: “As AI contributes more to improving AI, keeping that work aligned with our intentions becomes even more important.”</p>
+    <p class="srcs"><a href="https://openai.com/index/research-acceleration-view-inside-openai/" target="_blank">OpenAI research acceleration</a> · <a href="https://www.anthropic.com/research/automated-researchers-mitigate-alignment-failures" target="_blank">Anthropic automated researchers</a> · <a href="https://rsa-llm.github.io/" target="_blank">RSA</a> · <a href="https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/" target="_blank">AlphaEvolve</a> · <a href="https://openai.com/index/introducing-gpt-5-3-codex/" target="_blank">GPT-5.3-Codex</a> · <a href="https://openai.com/index/introducing-gpt-6-sol-and-luna/" target="_blank">GPT-6 Sol/Luna</a> · <a href="https://www.anthropic.com/institute/recursive-self-improvement" target="_blank">Anthropic on RSI</a></p>
+      <p class="care">Explain the demonstrated contributions confidently. Don't claim that labs have already achieved fully autonomous RSI: the sources don't support it, and Anthropic says it hasn't achieved that.</p>
+  </aside>
+</section>
+<!-- 21 · ALIGNMENT -->
+<section class="slide" data-ch="AI improving AI" data-t="2">
+  <div class="loopwrap" style="grid-template-columns:1fr 520px">
+    <div>
+      <h2 class="r" style="--d:100ms">Alignment has to <span class="accent">keep up.</span></h2>
+      <p class="sub r" style="--d:300ms;font-size:24px">Training models to pursue what we actually intend: safely, honestly, ethically.</p>
+      <div class="alist">
+        <p class="r" style="--d:700ms"><b>Reward hacking</b>Gaming the check, not the goal</p>
+        <p class="r" style="--d:900ms"><b>Agents escaping evals</b>Hugging Face, July 2026</p>
+        <p class="r" style="--d:1100ms"><b>Calls to pause</b>A bill to ban superintelligence, Sep 2026</p>
+      </div>
+    </div>
+    <canvas class="rsicv r" style="--d:200ms;width:520px;height:580px" id="alignCanvas" width="520" height="580"></canvas>
+  </div>
+  <aside class="notes">
+    <p>The word for this is <strong>alignment</strong>: training models so they pursue what we actually intend, safely, honestly and ethically, not just whatever gets rewarded.</p>
+    <p>We've already seen why it matters: reward hacking in everyday coding, and agents that broke out of an evaluation to cheat. Put that next to recursive self-improvement, a loop that keeps getting faster, and alignment stops being optional.</p>
+    <p>That's also why people are now calling to <strong>pause</strong>. On 23 September 2026, Senator Bernie Sanders and Rep. Greg Casar introduced the Ban Artificial Superintelligence Act. It would pause advanced AI development until federal oversight is in place, and pause training if a model shows warning signs such as being able to automate AI R&amp;D or avoid being shut down. Earlier, the Future of Life Institute's Superintelligence Statement (Oct 2025), signed by Yoshua Bengio, Geoffrey Hinton and many others, called for a prohibition on superintelligence until it can be done safely.</p>
+    <p>Others argue strongly for going faster, and the bill faces an uphill path in Congress. I won't settle that debate here. As engineers, the point is simple: define goals carefully, verify independently, and take alignment seriously.</p>
+    <p>Transition: “So what does all this change about our own work as engineers? Start with where the bottleneck is now.”</p>
+    <p class="care">Keep the policy part to about 20 seconds; the takeaway is the engineering one. Present the pause debate as a debate. The bill has been introduced, not passed.</p>
+    <p class="srcs"><a href="https://www.sanders.senate.gov/press-releases/news-sanders-casar-introduce-legislation-to-create-new-federal-agency-to-ban-artificial-superintelligence-pause-advanced-ai-development/" target="_blank">Sanders–Casar bill</a> · <a href="https://rollcall.com/2026/09/23/ai-superintelligence-ban-proposed-by-casar-sanders/" target="_blank">Roll Call</a> · <a href="https://www.axios.com/2025/10/22/superintelligence-ai-pause-yoshua-bengio" target="_blank">Superintelligence Statement (Axios)</a> · <a href="https://futureoflife.org/open-letter/pause-giant-ai-experiments/" target="_blank">FLI 2023 pause letter</a></p>
+  </aside>
+</section>
+<!-- 22 · SECTION 06 -->
+<section class="slide sect" data-ch="Skills &amp; hiring" data-t=".2">
+  <p class="snum r"><span data-scramble="06">06</span></p>
+  <h2 class="stitle r" style="--d:150ms">Our work</h2>
+  <p class="ssub r" style="--d:350ms">What changes for engineers</p>
+  <div class="sprog r" style="--d:500ms"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="on"></i></div>
+  <aside class="notes"><p>Section 6 of 6: <strong>Our work</strong>. What changes for engineers.</p></aside>
+</section>
+<!-- 23 · BOTTLENECK -->
+<section class="slide" data-ch="Skills &amp; hiring" data-t="2">
+  <h2 class="r" style="--d:100ms">The bottleneck keeps moving</h2>
+  <div class="bn r" style="--d:300ms">
+    <div class="spot">Bottleneck ▾</div>
+    <div class="stage go" style="--d:.9s"><span class="st">Was the constraint</span><span class="st2">Handed to AI</span><h3>Writing code</h3></div>
+    <div class="stage go" style="--d:2.1s"><span class="st">Was the constraint</span><span class="st2">Handed to AI</span><h3>Testing</h3></div>
+    <div class="stage go" style="--d:3.3s"><span class="st">Was the constraint</span><span class="st2">Handed to AI</span><h3>Reviewing</h3></div>
+    <div class="stage final" style="--d:4.6s"><span class="st">Now</span><h3>Deciding what's worth building</h3></div>
+  </div>
+  <aside class="notes">
+    <p>The job of this slide: <strong>where my attention goes now.</strong> We've seen what can be delegated, so don't re-walk the steps. Focus on what's left for us. <strong>The bottleneck keeps moving.</strong></p>
+    <p>First, writing code was the slow part. AI took that. Then testing and review became the constraint. Those are being handed over too. What's left at the front is choosing the right problem, explaining the intent, weighing trade-offs, and deciding which outcomes matter.</p>
+    <p>A longer view: we moved from low-level programming up to applications, and each layer of abstraction freed people for the next level up. This shift is just happening much faster.</p>
+    <p>AI helps with those later activities too. I'm not claiming any activity stays human forever; the point is that the constraint keeps moving.</p>
+    <p>Andrew Ng's latest piece (11 Sep 2026) says the same: skilled engineers won't just implement someone else's spec. They “actively shape the build.”</p>
+    <p>Transition: “So what does an engineer need to be good at?”</p>
+  </aside>
+</section>
+
+<!-- 24 · ROLES -->
+<section class="slide" data-ch="Skills &amp; hiring" data-t="2">
+  <h2 class="r" style="--d:100ms">Roles are <span class="accent">blurring.</span></h2>
+  <div class="rstage">
+    <p class="rcap before">Before: work passed through handoffs</p>
+    <p class="rcap after">Now: one engineer, working with agents</p>
+    <div class="rone" style="left:121px;width:878px"><span>One engineer</span></div>
+    <div class="ra" style="left:185px;width:60px"><i></i><span>handoff</span></div><div class="ra" style="left:415px;width:60px"><i></i><span>handoff</span></div><div class="ra" style="left:645px;width:60px"><i></i><span>handoff</span></div><div class="ra" style="left:875px;width:60px"><i></i><span>handoff</span></div><div class="rb" style="left:15px;--dx:120px;--pd:0.30s">Product manager</div><div class="rb" style="left:245px;--dx:60px;--pd:0.45s">Architect</div><div class="rb" style="left:475px;--dx:0px;--pd:0.60s">Developer</div><div class="rb" style="left:705px;--dx:-60px;--pd:0.75s">Tester</div><div class="rb" style="left:935px;--dx:-120px;--pd:0.90s">Operations</div>
+    <div class="ticket" style="--x0:91px;--step:230px"></div>
+    <div class="rag" style="left:220px;--d:4.30s"><i></i><span>agent</span></div><div class="rag" style="left:390px;--d:4.45s"><i></i><span>agent</span></div><div class="rag" style="left:560px;--d:4.60s"><i></i><span>agent</span></div><div class="rag" style="left:730px;--d:4.75s"><i></i><span>agent</span></div><div class="rag" style="left:900px;--d:4.90s"><i></i><span>agent</span></div>
+  </div>
+  <p class="foot" style="bottom:52px;opacity:0" id="rfoot">Understand the whole system. <span class="accent">Go deep where it matters.</span></p>
+  <aside class="notes">
+    <p>Something I've been saying for more than a year: <strong>roles are blurring</strong>. Architect, product manager, developer, tester, operations: with AI, one person can move across all of them.</p>
+    <p>So the growing skill is understanding the whole system: the user's need, the product decision, the architecture, the data, operations and the outcome, and how they connect.</p>
+    <p>That doesn't make specialists obsolete. You still need to go deep into a mechanism when it matters. Breadth to connect, depth where it counts.</p>
+    <p>Supporting research if asked: in the “Cybernetic Teammate” field experiment (776 P&amp;G professionals), AI-assisted proposals balanced technical and commercial views regardless of the person's background. That was one task, not proof that generalists always win.</p>
+    <p class="srcs"><a href="https://www.nber.org/papers/w33641" target="_blank">NBER w33641, The Cybernetic Teammate</a></p>
+  </aside>
+</section>
+<!-- 25 · NG -->
+<section class="slide" data-ch="Skills &amp; hiring" data-t="2.5">
+  <p class="kicker r">Andrew Ng's AI engineering skills map</p>
+  <h2 class="r" style="--d:100ms">What should we get good at?</h2>
+  <div class="ng">
+    <div class="ngc rs" style="--d:300ms"><span class="num">01</span><h3>Building &amp; deploying AI applications</h3><p><b>Seen today</b>Voice integration, my personal apps</p></div>
+    <div class="ngc rs" style="--d:450ms"><span class="num">02</span><h3>Software engineering fundamentals</h3><p><b>Seen today</b>Understanding the whole system</p></div>
+    <div class="ngc rs" style="--d:600ms"><span class="num">03</span><h3>Using coding agents</h3><p><b>Seen today</b>My agent loop, Bun</p></div>
+    <div class="ngc rs" style="--d:750ms"><span class="num">04</span><h3>Shaping the build</h3><p><b>Seen today</b>The bottleneck: what's worth building</p></div>
+  </div>
+  <p class="src">Four areas from Andrew Ng, “AI Engineering Skills Map” (Aug–Sep 2026)</p>
+  <aside class="notes">
+    <p>So what should we get good at? Andrew Ng recently published an AI engineering skills map with four areas, and they line up with what we've seen today:</p>
+    <ul>
+      <li><strong>Building and deploying AI applications:</strong> my voice integration, my personal apps.</li>
+      <li><strong>Software engineering fundamentals:</strong> understanding the whole system, roles blurring.</li>
+      <li><strong>Using coding agents:</strong> my agent loop, Bun.</li>
+      <li><strong>Shaping the build:</strong> the moving bottleneck, deciding what's worth building.</li>
+    </ul>
+    <p><strong>Optional, say it if it fits:</strong> understand the AI underneath. There's applied AI, building with models, and there's machine learning: data, training, fine-tuning, evaluation. Model development and training expertise matter a lot, especially now that AI is helping build AI.</p>
+    <p class="care">The four areas are Andrew Ng's. The qualities on the next slide are my team's view; don't label them as his categories.</p>
+    <p>It's a five-part series (14 Aug – 11 Sep 2026). Part 4 covers coding agents, Part 5 shaping the build. On 25 Sep he followed up on how tactics differ between 0-to-1 projects and mature projects.</p>
+    <p class="srcs"><a href="https://www.linkedin.com/pulse/ai-engineering-skills-map-andrew-ng-m479c" target="_blank">Skills Map overview</a> · <a href="https://charonhub.deeplearning.ai/the-ai-engineering-skills-map-in-detail-using-coding-agents/" target="_blank">Part 4: Coding Agents</a> · <a href="https://charonhub.deeplearning.ai/the-ai-engineering-skills-map-in-detail-shaping-the-build/" target="_blank">Part 5: Shaping the Build</a> · <a href="https://www.andrewng.org/writing" target="_blank">andrewng.org/writing</a></p>
+  </aside>
+</section>
+<!-- 26 · HIRING -->
+<section class="slide hire" data-ch="Skills &amp; hiring" data-t="2.5">
+  <p class="kicker r">Who we hire</p>
+  <h2 class="r" style="--d:100ms">We went looking for <span class="strike">experience.</span><br><span class="accent">We hired a student.</span></h2>
+  <div class="quals">
+    <span class="rs" style="--d:2000ms">Agency</span>
+    <span class="rs" style="--d:2150ms">Curiosity</span>
+    <span class="rs" style="--d:2300ms">First principles</span>
+    <span class="rs" style="--d:2450ms">How things really work</span>
+  </div>
+  <aside class="notes">
+    <p>We interviewed a lot of people, from juniors to very senior engineers and architects. We went in intending to hire someone experienced.</p>
+    <p><strong>We ended up hiring a student.</strong> Agentic AI wasn't his assigned work. He had taught himself how agents and the systems underneath them work. We could ask him: what is an agent, really? Is it just one LLM call? How does a goal work in a system like Codex? He could reason it through from first principles instead of repeating terms.</p>
+    <p>What stood out: agency, curiosity, first-principles thinking, and wanting to understand how things work underneath.</p>
+    <p>It changed which interview questions I find useful. Recalling facts about a tool tells me less than watching someone investigate an unfamiliar system and revise their explanation.</p>
+    <p>These qualities are my team's view from one hiring decision.</p>
+    <p><strong>Takeaway:</strong> build the ability to use agents, understand systems, shape useful work, and keep learning on your own.</p>
+    <p class="care">Keep him anonymous. This is one hiring decision, not a claim that experience doesn't matter. Don't invent his exact answers or later performance.</p>
+  </aside>
+</section>
+
+<!-- 27 · CLOSE -->
+<section class="slide" data-steps="3" data-ch="Close" data-t="1.5">
+  <p class="kicker r">Coding was just the entry point</p>
+  <h2 class="r" style="--d:100ms">Three things to take with you</h2>
+  <div class="three">
+    <div class="t3" data-at="1"><span>1</span><p>Choose problems <b>worth solving.</b> Think bigger.</p></div>
+    <div class="t3" data-at="2"><span>2</span><p>Delegate the work. <b>Own the outcome.</b></p></div>
+    <div class="t3" data-at="3"><span>3</span><p><b>Take initiative.</b> Build, investigate, keep learning.</p></div>
+  </div>
+  <aside class="notes">
+    <p><strong>Click-driven: 3 clicks.</strong></p>
+    <p>Let me bring it back to where I started. Coding was how this change entered my work, but it didn't stop there: bigger projects, science, AI itself, and now how we work and who we hire.</p>
+    <ol>
+      <li><strong>Choose problems worth solving. Think bigger.</strong> My personal apps, Bun and the science examples show why we can reconsider useful problems we previously thought were out of reach.</li>
+      <li><strong>Delegate the work. Own the outcome.</strong> Define success, understand the system, and verify the result. This connects the agent loop, “90% done” and alignment.</li>
+      <li><strong>Take initiative. Build, investigate, keep learning.</strong> Like the student we hired, explore something without waiting for an assignment, and understand how it works.</li>
+    </ol>
+    <p><strong>Closing:</strong> “Pick one useful problem you’ve been putting off. Start building with agents—and decide how you’ll know it actually works.”</p>
+    <p>Thank you. Happy to take questions.</p>
+  </aside>
+</section>
+<!-- 28 · Q&A -->
+<section class="slide cover2 qa" data-ch="Q&amp;A" data-t="5">
+  <h1 class="r" style="--d:150ms"><span data-scramble="Questions?">Questions?</span><i class="caret"></i></h1>
+  <div class="qr rs" style="--d:700ms"><div class="qrbox"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" shape-rendering="crispEdges"><path stroke="#172c49" d="M0 0.5h7m1 0h1m1 0h2m2 0h1m3 0h1m3 0h1m3 0h7M0 1.5h1m5 0h1m1 0h2m1 0h1m4 0h2m1 0h4m1 0h1m1 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m1 0h1m3 0h1m2 0h1m1 0h2m1 0h1m1 0h1m3 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m2 0h2m4 0h1m3 0h1m3 0h2m1 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m1 0h1m3 0h1m1 0h2m1 0h2m1 0h1m2 0h2m1 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m4 0h2m5 0h1m1 0h1m1 0h2m2 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M9 7.5h2m2 0h1m5 0h2m1 0h2M0 8.5h1m2 0h7m4 0h4m1 0h1m3 0h3m2 0h1m1 0h3M5 9.5h1m8 0h2m2 0h3m1 0h2m4 0h3M0 10.5h2m2 0h1m1 0h2m2 0h2m2 0h5m1 0h2m1 0h4m1 0h5M0 11.5h1m1 0h2m3 0h2m3 0h1m1 0h2m1 0h1m1 0h2m5 0h2m2 0h3M0 12.5h1m1 0h1m2 0h6m2 0h2m1 0h3m1 0h3m1 0h1m1 0h1m4 0h2M1 13.5h3m1 0h1m1 0h1m1 0h4m3 0h2m1 0h1m1 0h5m1 0h1M1 14.5h3m2 0h4m1 0h4m1 0h2m8 0h1m1 0h1m1 0h1M0 15.5h1m3 0h1m4 0h1m1 0h1m3 0h1m3 0h1m2 0h1m1 0h2m2 0h3m1 0h1M0 16.5h1m3 0h4m1 0h1m3 0h1m5 0h2m1 0h1m1 0h5M1 17.5h1m6 0h2m3 0h4m1 0h5m1 0h3m1 0h1m1 0h3M0 18.5h1m4 0h4m3 0h1m2 0h2m2 0h1m3 0h1m1 0h3m1 0h2m1 0h1M0 19.5h1m1 0h4m1 0h1m2 0h3m1 0h8m1 0h1m2 0h1m1 0h3m1 0h1M0 20.5h2m1 0h5m1 0h1m2 0h1m1 0h1m5 0h2m2 0h1m2 0h1m1 0h1M0 21.5h1m1 0h1m1 0h1m3 0h3m1 0h1m1 0h1m1 0h3m1 0h4m3 0h2m1 0h1M0 22.5h1m2 0h2m1 0h3m3 0h1m1 0h4m5 0h5m1 0h4M0 23.5h1m1 0h3m2 0h1m1 0h1m6 0h2m5 0h1m1 0h3m2 0h1M0 24.5h2m4 0h1m3 0h2m1 0h1m1 0h2m1 0h3m3 0h6M8 25.5h2m5 0h2m1 0h1m4 0h2m3 0h1m1 0h2M0 26.5h7m1 0h1m1 0h1m2 0h3m2 0h2m1 0h4m1 0h1m1 0h1m1 0h1M0 27.5h1m5 0h1m1 0h1m2 0h1m1 0h1m2 0h1m6 0h2m3 0h3m1 0h1M0 28.5h1m1 0h3m1 0h1m1 0h4m5 0h2m1 0h2m1 0h6M0 29.5h1m1 0h3m1 0h1m1 0h1m1 0h2m8 0h1m4 0h1m1 0h1m1 0h2m1 0h1M0 30.5h1m1 0h3m1 0h1m2 0h1m3 0h2m1 0h1m3 0h2m2 0h1m2 0h2m1 0h3M0 31.5h1m5 0h1m2 0h1m5 0h2m5 0h1m4 0h6M0 32.5h7m1 0h1m1 0h1m1 0h1m3 0h2m5 0h3m1 0h2"/></svg><i class="qrscan"></i></div><b>Let's connect</b><span>linkedin.com/in/maheshpalavalli</span></div>
+  <div class="byl r" style="--d:500ms"><div><b>Thank you.</b><span>Mahesh Palavalli · Architect, Office of the CTO · SAP · Views are my own</span></div></div>
+  <aside class="notes">
+    <p>Five minutes of Q&amp;A.</p>
+    <p>Likely questions:</p>
+    <ul>
+      <li><strong>“Has recursive self-improvement been achieved?”</strong> AI contributes to real parts of AI development today (experiments, training methods, infrastructure). Fully autonomous successor development hasn't been shown publicly. My view is that the loop is tightening quickly.</li>
+      <li><strong>“Is the Navier–Stokes proof accepted?”</strong> It's OpenAI's reported result with a Lean formalization; it hasn't been independently checked in my preparation. Qualifier: singularity formation with a smooth external force.</li>
+      <li><strong>“Do we still need to read code?”</strong> Less and less for many tasks. How much you delegate depends on the risk. You still need to understand the system.</li>
+      <li><strong>“Is experience unimportant?”</strong> No. That's one hiring decision where agency and understanding stood out.</li>
+    </ul>
+  </aside>
+</section>
+
+</div></div>
+
+<div id="hud">
+  <span id="chapter"></span><span id="count"></span>
+  <button id="bPrev" aria-label="Previous">←</button><button id="bNext" aria-label="Next">→</button>
+  <button id="bNotes">Notes<kbd>N</kbd></button>
+  <button id="bPres">Presenter<kbd>P</kbd></button>
+  <button id="bFull">Full screen<kbd>F</kbd></button>
+</div>
+<aside id="notesPanel" aria-label="Speaker notes"></aside>
+
+<script>
+(() => {
+  const deck = document.getElementById('deck');
+  const slides = [...deck.querySelectorAll('.slide')];
+  const hud = document.getElementById('hud');
+  const notesPanel = document.getElementById('notesPanel');
+  const totalMin = slides.reduce((a, s) => a + parseFloat(s.dataset.t || 0), 0);
+  let cur = -1, timers = [], presenter = null, startTime = null;
+
+  /* scale 1280x720 to window */
+  function fit() {
+    const s = Math.min(innerWidth / 1280, innerHeight / 720) * (document.fullscreenElement ? 1 : .94);
+    deck.style.transform = `scale(${s})`;
+  }
+  addEventListener('resize', fit); fit();
+
+  /* build generated visuals */
+  const g = document.getElementById('g64');
+  if (g) for (let i = 0; i < 64; i++) { const c = document.createElement('i'); c.style.setProperty('--d', (Math.random() * 3.2).toFixed(2) + 's'); g.appendChild(c); }
+
+  const seq = document.getElementById('seq');
+  const L = 'ACGT'; let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const cols = 26, rowsN = 9, hit = { r0: 3, r1: 5, c0: 13, c1: 20 };
+  for (let r = 0; r < rowsN; r++) for (let c = 0; c < cols; c++) {
+    const s = document.createElement('span'); s.textContent = L[Math.floor(rnd() * 4)];
+    if (r >= hit.r0 && r <= hit.r1 && c >= hit.c0 && c <= hit.c1) { s.className = 'hit'; s.style.setProperty('--d', (0.5 + 3.4 * (c + 1) / cols + .1).toFixed(2) + 's'); }
+    seq.appendChild(s);
+  }
+  requestAnimationFrame(() => {
+    const cells = seq.children, a = cells[hit.r0 * cols + hit.c0], b = cells[hit.r1 * cols + hit.c1], f = document.getElementById('found');
+    const pad = 6;
+    f.style.left = (a.offsetLeft + 24 - pad) + 'px'; f.style.top = (a.offsetTop + 26 - pad) + 'px';
+    f.style.width = (b.offsetLeft + b.offsetWidth - a.offsetLeft + pad * 2) + 'px';
+    f.style.height = (b.offsetTop + b.offsetHeight - a.offsetTop + pad * 2) + 'px';
+  });
+
+  /* swarm canvas */
+  const cv = document.getElementById('swarm'), cx = cv.getContext('2d');
+  const dpr = Math.max(1, devicePixelRatio || 1); cv.width = 560 * dpr; cv.height = 430 * dpr; cx.scale(dpr, dpr);
+  const G = 14, N = 700, parts = [], groups = [];
+  let raf = null, t0 = 0;
+  function initSwarm() {
+    groups.length = 0; parts.length = 0;
+    for (let k = 0; k < G; k++) { const a = k / G * Math.PI * 2; groups.push({ hx: 280 + Math.cos(a) * 190 * (0.55 + Math.random() * .45), hy: 215 + Math.sin(a) * 150 * (0.55 + Math.random() * .45), x: 0, y: 0, ph: Math.random() * 6 }); }
+    for (let i = 0; i < N; i++) { const gi = i % G, gr = groups[gi]; parts.push({ g: gi, a: Math.random() * 6.28, r: 6 + Math.random() * 34, s: (.4 + Math.random()) * (Math.random() < .5 ? -1 : 1) * .02, x: gr.hx, y: gr.hy }); }
+  }
+  function frame(ts) {
+    if (!t0) t0 = ts; const t = (ts - t0) / 1000, cyc = 11, p = (t % cyc) / cyc;
+    // phases: explore (0-.45), converge (.45-.75), found (.75-1)
+    const conv = p < .45 ? 0 : p < .75 ? (p - .45) / .3 : 1, ease = conv * conv * (3 - 2 * conv);
+    cx.clearRect(0, 0, 560, 430);
+    groups.forEach((gr, k) => { const wob = 1 - ease; gr.x = gr.hx + Math.cos(t * .5 + gr.ph) * 22 * wob; gr.y = gr.hy + Math.sin(t * .6 + gr.ph) * 18 * wob; gr.x += (280 - gr.x) * ease * .85; gr.y += (215 - gr.y) * ease * .85; });
+    // group links
+    cx.lineWidth = 1;
+    for (let k = 0; k < G; k++) { const a = groups[k], b = groups[(k + 3) % G]; const al = .08 + .25 * Math.max(0, Math.sin(t * 1.3 + k)); cx.strokeStyle = `rgba(41,90,203,${al * (1 - ease)})`; cx.beginPath(); cx.moveTo(a.x, a.y); cx.lineTo(b.x, b.y); cx.stroke(); }
+    for (const q of parts) {
+      q.a += q.s; const gr = groups[q.g], rr = q.r * (1 - ease * .6);
+      const tx = gr.x + Math.cos(q.a) * rr, ty = gr.y + Math.sin(q.a) * rr;
+      q.x += (tx - q.x) * .12; q.y += (ty - q.y) * .12;
+    }
+    cx.strokeStyle = 'rgba(41,90,203,.10)';
+    cx.beginPath();
+    for (let i = 0; i < N - G; i += 2) { const a = parts[i], b = parts[i + G]; if (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) < 30) { cx.moveTo(a.x, a.y); cx.lineTo(b.x, b.y); } }
+    cx.stroke();
+    for (const q of parts) { cx.fillStyle = q.g % 4 === 0 ? 'rgba(23,44,73,.85)' : 'rgba(41,90,203,.7)'; cx.fillRect(q.x - 1.3, q.y - 1.3, 2.6, 2.6); }
+    if (p > .72) {
+      const k = Math.min(1, (p - .72) / .1);
+      cx.strokeStyle = `rgba(23,44,73,${k})`; cx.lineWidth = 2.5; cx.beginPath(); cx.arc(280, 215, 64 + 8 * Math.sin(t * 3), 0, Math.PI * 2 * k); cx.stroke();
+      cx.fillStyle = `rgba(23,44,73,${k})`; cx.font = '600 17px Helvetica Neue, Arial'; cx.textAlign = 'center'; cx.fillText('✓ proof', 280, 314);
+    }
+    cx.font = '600 13px Helvetica Neue, Arial'; cx.textAlign = 'left'; cx.fillStyle = '#54667e';
+    cx.fillText(p < .45 ? 'EXPLORING IN GROUPS' : p < .75 ? 'SHARING & NARROWING' : 'CHECKED IN LEAN', 20, 30);
+    raf = requestAnimationFrame(frame);
+  }
+  function startSwarm() { stopSwarm(); initSwarm(); t0 = 0; raf = requestAnimationFrame(frame); }
+  function stopSwarm() { if (raf) cancelAnimationFrame(raf); raf = null; }
+
+  /* decode effect for [data-scramble] */
+  function scramble(el) {
+    const final = el.dataset.scramble, glyphs = '01{}<>/=;#*+[]', t0 = performance.now() + 650;
+    el.textContent = final.replace(/\S/g, () => glyphs[Math.floor(Math.random() * glyphs.length)]);
+    const iv = setInterval(() => {
+      const k = (performance.now() - t0) / 70;
+      el.textContent = [...final].map((ch, i) => ch === ' ' || k > i * 1.6 + 6 ? ch : glyphs[Math.floor(Math.random() * glyphs.length)]).join('');
+      if (k > final.length * 1.6 + 6) { el.textContent = final; clearInterval(iv); }
+    }, 45);
+    timers.push(iv);
+  }
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); return e; };
+  /* breach visual: agents in a sandbox streaming into Hugging Face */
+  const bA = document.getElementById('breachAgents'), bF = document.getElementById('breachFlow');
+  if (bA) {
+    let sd = 3; const rr = () => (sd = (sd * 9301 + 49297) % 233280) / 233280;
+    const ag = [];
+    for (let i = 0; i < 90; i++) { const x = 60 + rr() * 330, y = 75 + rr() * 140; ag.push([x, y]); }
+    ag.forEach(([x, y], i) => {
+      const c = el('circle', { cx: x.toFixed(1), cy: y.toFixed(1), r: 3.4, fill: i % 5 ? '#295acb' : '#172c49', opacity: .75 });
+      c.appendChild(el('animate', { attributeName: 'opacity', values: '.35;.95;.35', dur: (1.4 + rr() * 1.6).toFixed(2) + 's', repeatCount: 'indefinite', begin: (-rr() * 2).toFixed(2) + 's' }));
+      bA.appendChild(c);
+    });
+    for (let i = 0; i < 40; i++) { const a = ag[Math.floor(rr() * ag.length)], b = ag[Math.floor(rr() * ag.length)]; bA.appendChild(el('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: '#295acb', 'stroke-opacity': .12 })); }
+    for (let i = 0; i < 26; i++) {
+      const a = ag[Math.floor(rr() * ag.length)], ty = 80 + rr() * 90;
+      const d = `M${a[0].toFixed(0)} ${a[1].toFixed(0)} C 560 ${a[1].toFixed(0)}, 680 ${ty.toFixed(0)}, 820 ${ty.toFixed(0)}`;
+      const c = el('circle', { r: 3.4, fill: '#d9534f', opacity: 0 });
+      c.appendChild(el('animateMotion', { dur: '1.6s', begin: (1.2 + i * .22).toFixed(2) + 's', repeatCount: 'indefinite', path: d }));
+      c.appendChild(el('animate', { attributeName: 'opacity', values: '0;.9;.9;0', dur: '1.6s', begin: (1.2 + i * .22).toFixed(2) + 's', repeatCount: 'indefinite' }));
+      bF.appendChild(c);
+    }
+  }
+
+  /* RSI: accelerating rising helix */
+  const rsi = (() => {
+    const c = document.getElementById('rsiCanvas'); if (!c) return { start() {}, stop() {} };
+    const W = 540, H = 590, d = Math.max(1, devicePixelRatio || 1);
+    c.width = W * d; c.height = H * d; const g = c.getContext('2d'); g.scale(d, d);
+    const TURNS = 5, TMAX = Math.PI * 2 * TURNS, cx = 235, base = 530, rise = 450, tilt = .3;
+    const labels = ['Model 1', 'Model 2', 'Model 3', 'Model 4', 'Next ?'];
+    const phases = ['research', 'training', 'evaluation'];
+    const P = t => { const f = t / TMAX, r = 55 + 150 * f; return [cx + r * Math.cos(t), base - rise * f + r * tilt * Math.sin(t), Math.sin(t), f]; };
+    let raf = null, last = 0, head = 0, hold = 0, pops = [];
+    function reset() { head = 0; hold = 0; pops = []; }
+    function frame(ts) {
+      const dt = Math.min(.05, last ? (ts - last) / 1000 : 0); last = ts;
+      if (head < TMAX) {
+        head = Math.min(TMAX, head + dt * 3 * (1 + 1.8 * head / TMAX));
+        for (let n = 0; n < TURNS; n++) { const tn = Math.PI * 2 * (n + 1); if (head >= tn && !pops[n]) pops[n] = ts; }
+      } else hold += dt;
+      const fade = hold > 4.5 ? Math.max(0, 1 - (hold - 4.5) / .6) : 1;
+      if (hold > 5.3) reset();
+      g.clearRect(0, 0, W, H); g.globalAlpha = fade;
+      // capability axis
+      g.strokeStyle = '#d5e0ee'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(22, 540); g.lineTo(22, 60); g.stroke();
+      g.beginPath(); g.moveTo(15, 72); g.lineTo(22, 58); g.lineTo(29, 72); g.stroke();
+      g.save(); g.translate(40, 300); g.rotate(-Math.PI / 2); g.fillStyle = '#8a9ab0'; g.font = '700 12px Helvetica Neue, Arial'; g.textAlign = 'center'; g.fillText('C A P A B I L I T Y', 0, 0); g.restore();
+      // helix: back strands first, then front strands
+      for (const front of [false, true]) {
+        let prev = P(0);
+        for (let t = .04; t <= head; t += .04) {
+          const q = P(t), isFront = q[2] > 0;
+          if (isFront === front) {
+            const a = front ? .95 : .22;
+            g.strokeStyle = `rgba(41,90,203,${a})`; g.lineWidth = front ? 2.4 + 2.2 * q[3] : 1.4;
+            g.beginPath(); g.moveTo(prev[0], prev[1]); g.lineTo(q[0], q[1]); g.stroke();
+          }
+          prev = q;
+        }
+      }
+      // generation nodes
+      pops.forEach((pt, n) => {
+        if (!pt) return;
+        const q = P(Math.PI * 2 * (n + 1) - .001), age = (ts - pt) / 1000, k = Math.min(1, age / .35), rr = (6 + n * 2.2) * (k < 1 ? .6 + .4 * k : 1);
+        if (age < 1) { g.strokeStyle = `rgba(41,90,203,${.5 * (1 - age)})`; g.lineWidth = 2; g.beginPath(); g.arc(q[0], q[1], rr + age * 26, 0, 7); g.stroke(); }
+        const lastN = n === TURNS - 1;
+        g.fillStyle = lastN ? '#295acb' : '#172c49'; g.beginPath(); g.arc(q[0], q[1], rr, 0, 7); g.fill();
+        g.fillStyle = '#fff'; g.beginPath(); g.arc(q[0], q[1], rr * .38, 0, 7); g.fill();
+        g.globalAlpha = fade * k; g.fillStyle = lastN ? '#295acb' : '#172c49'; g.font = `${lastN ? 700 : 600} ${16 + n}px Helvetica Neue, Arial`; g.textAlign = 'left';
+        g.fillText(labels[n], q[0] + rr + 12, q[1] + 6); g.globalAlpha = fade;
+      });
+      // glowing head + current phase
+      if (head < TMAX) {
+        const q = P(head), glow = g.createRadialGradient(q[0], q[1], 0, q[0], q[1], 26);
+        glow.addColorStop(0, 'rgba(41,90,203,.55)'); glow.addColorStop(1, 'rgba(41,90,203,0)');
+        g.fillStyle = glow; g.beginPath(); g.arc(q[0], q[1], 26, 0, 7); g.fill();
+        g.fillStyle = '#295acb'; g.beginPath(); g.arc(q[0], q[1], 6, 0, 7); g.fill();
+        const ph = phases[Math.floor(((head % (Math.PI * 2)) / (Math.PI * 2)) * 3)];
+        g.font = '600 13px Helvetica Neue, Arial'; g.fillStyle = '#54667e'; g.textAlign = 'center'; g.fillText(ph.toUpperCase(), q[0], q[1] - 18);
+      } else {
+        const q = P(TMAX), pulse = .5 + .5 * Math.sin(hold * 5);
+        const glow = g.createRadialGradient(q[0], q[1], 0, q[0], q[1], 60);
+        glow.addColorStop(0, `rgba(41,90,203,${.25 + .2 * pulse})`); glow.addColorStop(1, 'rgba(41,90,203,0)');
+        g.fillStyle = glow; g.beginPath(); g.arc(q[0], q[1], 60, 0, 7); g.fill();
+      }
+      g.globalAlpha = 1;
+      raf = requestAnimationFrame(frame);
+    }
+    return { start() { this.stop(); reset(); last = 0; raf = requestAnimationFrame(frame); }, stop() { if (raf) cancelAnimationFrame(raf); raf = null; } };
+  })();
+
+  /* pattern: three lanes, explore -> share -> check */
+  const lanes = (() => {
+    const c = document.getElementById('lanesCanvas'); if (!c) return { start() {}, stop() {} };
+    const W = 1120, H = 440, d = Math.max(1, devicePixelRatio || 1);
+    c.width = W * d; c.height = H * d; const g = c.getContext('2d'); g.scale(d, d);
+    const X0 = 190, X1 = 1030, SPLIT1 = .38, SPLIT2 = .62, GATE = .8;
+    const L = [
+      { name: 'Code', sub: 'Bun → Rust', gate: 'Tests', y: 125 },
+      { name: 'Math', sub: 'Navier–Stokes', gate: 'Lean proof', y: 250 },
+      { name: 'Biology', sub: 'ART enzyme system', gate: 'Lab', y: 375 }
+    ];
+    let parts = [], raf = null, last = 0, T = 0, hits = [0, 0, 0];
+    const spread = u => u < SPLIT1 ? Math.sin(u / SPLIT1 * Math.PI / 2) : u < SPLIT2 ? Math.cos((u - SPLIT1) / (SPLIT2 - SPLIT1) * Math.PI / 2) : 0;
+    const X = u => X0 + u * (X1 - X0);
+    function frame(ts) {
+      const dt = Math.min(.05, last ? (ts - last) / 1000 : 0); last = ts; T += dt;
+      L.forEach((l, i) => { if (T > .3 + i * .35 && Math.random() < dt * 30) parts.push({ l: i, u: 0, s: (Math.random() * 2 - 1), w: Math.random() * 6.28, keep: Math.random() < .16, v: .16 + Math.random() * .05 }); });
+      g.clearRect(0, 0, W, H);
+      // column headers
+      g.font = '700 13px Helvetica Neue, Arial'; g.fillStyle = '#54667e'; g.textAlign = 'center';
+      [['EXPLORE IN PARALLEL', (0 + SPLIT1) / 2], ['SHARE WHAT WORKS', (SPLIT1 + SPLIT2) / 2], ['CHECK THE RESULT', (SPLIT2 + 1) / 2]].forEach(([t, u]) => g.fillText(t.split('').join(String.fromCharCode(8202)), X(u), 30));
+      g.strokeStyle = '#e3eaf4'; g.lineWidth = 1; [SPLIT1, SPLIT2].forEach(u => { g.beginPath(); g.setLineDash([3, 6]); g.moveTo(X(u), 48); g.lineTo(X(u), H - 10); g.stroke(); }); g.setLineDash([]);
+      L.forEach((l, i) => {
+        // lane labels
+        g.textAlign = 'left'; g.fillStyle = '#172c49'; g.font = '600 26px Helvetica Neue, Arial'; g.fillText(l.name, 0, l.y + 2);
+        g.fillStyle = '#54667e'; g.font = '500 15px Helvetica Neue, Arial'; g.fillText(l.sub, 0, l.y + 24);
+        // lane guide
+        g.strokeStyle = '#eaf2ff'; g.lineWidth = 2; g.beginPath(); g.moveTo(X(SPLIT2), l.y); g.lineTo(X1, l.y); g.stroke();
+      });
+      parts = parts.filter(q => {
+        q.u += q.v * dt;
+        if (!q.keep && q.u > SPLIT2 - .02) return false;
+        if (q.u >= 1) { hits[q.l] = T; return false; }
+        const l = L[q.l], sp = spread(q.u), y = l.y + (q.s * 44 + Math.sin(T * 3 + q.w) * 5) * sp, x = X(q.u);
+        const past = q.u > GATE;
+        const fadeOut = !q.keep ? Math.max(0, 1 - Math.max(0, q.u - SPLIT1) / (SPLIT2 - SPLIT1)) : 1;
+        g.globalAlpha = fadeOut;
+        g.fillStyle = q.keep && q.u > SPLIT1 ? '#172c49' : '#295acb';
+        const r = q.keep && q.u > SPLIT1 ? 4.2 : 2.6;
+        g.beginPath(); g.arc(x, y, r, 0, 7); g.fill();
+        if (past) { g.globalAlpha = .25; g.beginPath(); g.arc(x, y, r + 5, 0, 7); g.fill(); }
+        g.globalAlpha = 1;
+        return true;
+      });
+      L.forEach((l, i) => {
+        // gate
+        const gx = X(GATE); g.fillStyle = '#fff'; g.strokeStyle = '#172c49'; g.lineWidth = 2;
+        g.font = '700 14px Helvetica Neue, Arial'; const w = g.measureText(l.gate).width + 28;
+        g.beginPath(); g.roundRect(gx - w / 2, l.y - 16, w, 32, 16); g.fill(); g.stroke();
+        g.fillStyle = '#172c49'; g.textAlign = 'center'; g.fillText(l.gate, gx, l.y + 5);
+        // check target
+        const k = Math.max(0, 1 - (T - hits[i]) / .6);
+        g.fillStyle = k > 0 ? `rgba(41,90,203,${.15 + .85 * k})` : '#eaf2ff'; g.beginPath(); g.arc(X1 + 36, l.y, 20 + 6 * k, 0, 7); g.fill();
+        g.strokeStyle = k > .05 ? '#fff' : '#295acb'; g.lineWidth = 3; g.beginPath(); g.moveTo(X1 + 27, l.y); g.lineTo(X1 + 34, l.y + 7); g.lineTo(X1 + 46, l.y - 6); g.stroke();
+      });
+      raf = requestAnimationFrame(frame);
+    }
+    return { start() { this.stop(); parts = []; T = 0; last = 0; hits = [-9, -9, -9]; raf = requestAnimationFrame(frame); }, stop() { if (raf) cancelAnimationFrame(raf); raf = null; } };
+  })();
+
+  /* Option B: bun port tiles */
+  const port = document.getElementById('port');
+  if (port) { let sd = 11; const rr = () => (sd = (sd * 9301 + 49297) % 233280) / 233280;
+    for (let i = 0; i < 64; i++) { const t = document.createElement('i'); const wave = Math.floor(rr() * 6); t.style.setProperty('--d', (0.5 + wave * .85 + rr() * .6).toFixed(2) + 's'); port.appendChild(t); } }
+
+  /* Option B: kinetic pattern */
+  const kin = (() => {
+    const k = document.getElementById('kin'); if (!k) return { start() {}, stop() {} };
+    const F = [['64 agents port Bun', 'work merged continuously', 'tests pass'], ['~10,000 agents try approaches', 'groups exchange ideas', 'Lean checks the proof'], ['~950 agents scan sequences', 'leads narrowed down', 'lab experiments']];
+    const cols = [...k.querySelectorAll('.kc')], doms = [...k.querySelectorAll('.kd')];
+    let iv = null, tick = 0;
+    function show() {
+      const f = Math.floor(tick / 4) % 3, st = tick % 4;
+      doms.forEach((d, i) => d.classList.toggle('on', i === f));
+      cols.forEach((c, i) => {
+        c.classList.toggle('lit', st > i);
+        const pEl = c.querySelector('p');
+        if (st === 0) { pEl.classList.add('fade'); setTimeout(() => { pEl.textContent = F[f][i]; pEl.classList.remove('fade'); }, 350); }
+      });
+      tick++;
+    }
+    return { start() { this.stop(); tick = 0; show(); iv = setInterval(show, 1100); }, stop() { if (iv) clearInterval(iv); iv = null; } };
+  })();
+
+  /* Option B: alignment guardrail helix */
+  const align = (() => {
+    const c = document.getElementById('alignCanvas'); if (!c) return { start() {}, stop() {} };
+    const W = 520, H = 580, d = Math.max(1, devicePixelRatio || 1);
+    c.width = W * d; c.height = H * d; const g = c.getContext('2d'); g.scale(d, d);
+    const TMAX = Math.PI * 2 * 4.5, cx = 250, base = 520, rise = 440, tilt = .3;
+    const P = (t, extra) => { const f = t / TMAX, r = 50 + 150 * f + extra; return [cx + r * Math.cos(t), base - rise * f + r * tilt * Math.sin(t), Math.sin(t), f]; };
+    let raf = null, last = 0, head = 0, hold = 0;
+    function strand(upto, extra, front, style) {
+      let prev = P(0, extra);
+      for (let t = .04; t <= upto; t += .04) { const q = P(t, extra); if ((q[2] > 0) === front) { style(q, front); g.beginPath(); g.moveTo(prev[0], prev[1]); g.lineTo(q[0], q[1]); g.stroke(); } prev = q; }
+    }
+    function frame(ts) {
+      const dt = Math.min(.05, last ? (ts - last) / 1000 : 0); last = ts;
+      if (head < TMAX) head = Math.min(TMAX, head + dt * 3 * (1 + 1.5 * head / TMAX)); else hold += dt;
+      if (hold > 4.5) { head = 0; hold = 0; }
+      const lag = 1.1 + .6 * Math.sin(ts / 700);
+      const guard = Math.max(0, head - lag);
+      g.clearRect(0, 0, W, H);
+      for (const front of [false, true]) {
+        strand(guard, 26, front, (q, f) => { g.setLineDash([2, 7]); g.lineCap = 'round'; g.strokeStyle = `rgba(23,44,73,${f ? .75 : .2})`; g.lineWidth = f ? 4 : 2; });
+        g.setLineDash([]);
+        strand(head, 0, front, (q, f) => { g.strokeStyle = `rgba(41,90,203,${f ? .95 : .22})`; g.lineWidth = f ? 2.4 + 2.2 * q[3] : 1.4; });
+      }
+      const h = P(head, 0), gq = P(guard, 26);
+      g.fillStyle = '#295acb'; g.beginPath(); g.arc(h[0], h[1], 7, 0, 7); g.fill();
+      g.fillStyle = '#172c49'; g.beginPath(); g.arc(gq[0], gq[1], 6, 0, 7); g.fill();
+      g.font = '700 14px Helvetica Neue, Arial'; g.textAlign = 'left';
+      g.fillStyle = '#295acb'; g.fillText('CAPABILITY', h[0] + 14, h[1] - 8);
+      g.fillStyle = '#172c49'; g.textAlign = 'right'; g.fillText('ALIGNMENT', gq[0] - 14, gq[1] + 20);
+      raf = requestAnimationFrame(frame);
+    }
+    return { start() { this.stop(); head = 0; hold = 0; last = 0; raf = requestAnimationFrame(frame); }, stop() { if (raf) cancelAnimationFrame(raf); raf = null; } };
+  })();
+
+  /* counters */
+  function runCounters(s) {
+    s.querySelectorAll('[data-count]').forEach(n => {
+      const end = +n.dataset.count, delay = +(n.dataset.delay || 450), dur = +(n.dataset.dur || 1600);
+      n.textContent = '0';
+      timers.push(setTimeout(() => {
+        const st = performance.now();
+        const tick = now => { const k = Math.min(1, (now - st) / dur), e = 1 - Math.pow(1 - k, 3); n.textContent = Math.round(end * e).toLocaleString('en-US'); if (k < 1 && slides[cur] === s) requestAnimationFrame(tick); else n.textContent = end.toLocaleString('en-US'); };
+        requestAnimationFrame(tick);
+      }, delay));
+    });
+  }
+
+  /* notes */
+  function headline(s) { const h = s.querySelector('h1,h2'); if (!h) return ''; const c = h.cloneNode(true); c.querySelectorAll('br').forEach(b => b.replaceWith(' ')); return c.textContent.replace(/\s+/g, ' ').trim(); }
+  function notesHTML(i) {
+    const s = slides[i], title = headline(s);
+    return `<h4>${i + 1} / ${slides.length} · ${s.dataset.ch}</h4><p class="nt">${title}</p><p class="tm">≈ ${s.dataset.t} min</p>${s.querySelector('.notes')?.innerHTML || ''}`;
+  }
+
+  let step = 0;
+  const nSteps = s => +(s.dataset.steps || 0);
+  const hooks = {};
+  const evoStates = ['hhhhh', 'hthhh', 'ttthh', 'tathh', 'taath', 'taaat', 'taaaa'];
+  const evoEras = [['Before', 'We did it all'], ['~2021', 'Autocomplete'], ['~2023', 'Chat assistants'], ['~2024', 'Agents write the code'], ['~2025', 'Agents write and run the tests'], ['~2025–26', 'Agents review'], ['2026', 'Agents ship']];
+  hooks.evo = (k, s) => {
+    s.querySelectorAll('.ecard').forEach((c, i) => {
+      const st = evoStates[k][i];
+      if (c.dataset.s !== st) { c.dataset.s = st; c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump'); }
+      c.querySelector('.state').textContent = { h: 'You', t: 'You + AI', a: 'AI' }[st];
+    });
+    const y = s.querySelector('#eraYear'), n = s.querySelector('#eraName');
+    if (n.textContent !== evoEras[k][1]) { y.textContent = evoEras[k][0]; n.textContent = evoEras[k][1]; [y, n].forEach(e => { e.classList.remove('swap'); void e.offsetWidth; e.classList.add('swap'); }); }
+    s.querySelector('#etrack').style.width = (k / 6 * 100) + '%';
+  };
+  function setStep(k) {
+    const s = slides[cur]; step = k; s.dataset.step = k;
+    s.querySelectorAll('[data-at]').forEach(e => e.classList.toggle('shown', +e.dataset.at <= k));
+    if (hooks[s.id]) hooks[s.id](k, s);
+    const n = nSteps(s);
+    document.getElementById('count').textContent = `${cur + 1} / ${slides.length}` + (n ? ` · click ${k}/${n}` : '');
+    updatePresenter();
+  }
+  function go(i, force, back) {
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    if (i === cur && !force) return;
+    timers.forEach(t => { clearTimeout(t); clearInterval(t); }); timers = [];
+    if (cur >= 0) slides[cur].classList.remove('on');
+    const s = slides[i];
+    // restart CSS animations by forcing reflow
+    void s.offsetWidth;
+    s.classList.add('on'); cur = i;
+    if (s.querySelector('#swarm')) startSwarm(); else stopSwarm();
+    s.querySelectorAll('[data-scramble]').forEach(scramble);
+    if (s.querySelector('#rsiCanvas')) rsi.start(); else rsi.stop();
+    if (s.querySelector('#lanesCanvas')) lanes.start(); else lanes.stop();
+    if (s.querySelector('#kin')) kin.start(); else kin.stop();
+    if (s.querySelector('#alignCanvas')) align.start(); else align.stop();
+    runCounters(s);
+    document.getElementById('chapter').textContent = s.dataset.ch;
+    document.getElementById('count').textContent = `${i + 1} / ${slides.length}`;
+    document.getElementById('bar').style.width = `${(i / (slides.length - 1)) * 100}%`;
+    notesPanel.innerHTML = notesHTML(i);
+    history.replaceState(null, '', '#' + (i + 1));
+    setStep(back ? nSteps(s) : 0);
+  }
+  const next = () => { if (step < nSteps(slides[cur])) setStep(step + 1); else go(cur + 1); };
+  const prev = () => { if (step > 0) setStep(step - 1); else go(cur - 1, false, true); };
+
+  function key(e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const k = e.key;
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(k)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(k)) { e.preventDefault(); prev(); }
+    else if (k === 'Home') go(0); else if (k === 'End') go(slides.length - 1);
+    else if (k === 'n' || k === 'N') notesPanel.classList.toggle('open');
+    else if (k === 'p' || k === 'P') openPresenter();
+    else if (k === 'f' || k === 'F') toggleFull();
+    else if (k === 'r' || k === 'R') go(cur, true);
+  }
+  addEventListener('keydown', key);
+  document.getElementById('bNext').onclick = next;
+  document.getElementById('bPrev').onclick = prev;
+  document.getElementById('bNotes').onclick = () => notesPanel.classList.toggle('open');
+  document.getElementById('bPres').onclick = () => openPresenter();
+  document.getElementById('bFull').onclick = () => toggleFull();
+  function toggleFull() { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); }
+  document.addEventListener('fullscreenchange', fit);
+  document.getElementById('stage').addEventListener('click', e => { if (e.target.closest('a,button')) return; (e.clientX > innerWidth * .25 ? next : prev)(); });
+
+  /* hide HUD when idle */
+  let idle; const wake = () => { hud.classList.remove('idle'); clearTimeout(idle); idle = setTimeout(() => hud.classList.add('idle'), 2200); };
+  addEventListener('mousemove', wake); wake();
+
+  /* presenter window */
+  function openPresenter() {
+    if (presenter && !presenter.closed) { presenter.focus(); return; }
+    presenter = open('', 'se-presenter', 'width=1100,height=760');
+    if (!presenter) return;
+    startTime = startTime || Date.now();
+    presenter.document.write(`<!doctype html><title>Presenter · Software Engineering Is Changing</title><style>
+      body{margin:0;font-family:"Helvetica Neue",Arial,sans-serif;background:#edf2f8;color:#172c49;display:grid;grid-template-columns:1fr 360px;height:100vh}
+      main{padding:28px 34px;overflow:auto}aside{background:#fff;border-left:1px solid #d5e0ee;padding:28px;display:flex;flex-direction:column;gap:18px}
+      h4{margin:0;font-size:13px;letter-spacing:1.6px;text-transform:uppercase;color:#295acb}.nt{font-size:30px;font-weight:600;letter-spacing:-.6px;margin:6px 0 4px}.tm{color:#54667e;font-size:14px}
+      main p,main li{font-size:21px;line-height:1.5}main p{margin:0 0 14px}a{color:#295acb}.care{background:#f3f7fd;border-left:3px solid #5579b4;padding:10px 14px;border-radius:6px;font-size:16px!important;color:#54667e}.srcs{font-size:14px!important;color:#54667e;border-top:1px solid #d5e0ee;padding-top:10px}
+      .clock{font-size:54px;font-weight:600;letter-spacing:-2px;font-variant-numeric:tabular-nums}.lbl{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#54667e;font-weight:700}
+      .nx{font-size:22px;font-weight:600;line-height:1.25}.pace{font-size:16px}.btns{display:flex;gap:10px;margin-top:auto}button{flex:1;font:inherit;font-size:18px;padding:14px;border-radius:12px;border:1px solid #d5e0ee;background:#fff;cursor:pointer}button:hover{background:#eaf2ff}
+      .ok{color:#1f8a5b}.late{color:#c0392b}</style>
+      <main id="n"></main><aside><div><div class="lbl">Elapsed</div><div class="clock" id="clk">0:00</div><div class="pace" id="pace"></div></div>
+      <div><div class="lbl">Next</div><div class="nx" id="nx"></div></div>
+      <div class="btns"><button id="pv">← Back</button><button id="nv">Next →</button></div><button id="rs" style="flex:none;font-size:14px;padding:8px">Reset timer</button></aside>`);
+    presenter.document.close();
+    const d = presenter.document;
+    d.getElementById('pv').onclick = prev; d.getElementById('nv').onclick = next;
+    d.getElementById('rs').onclick = () => { startTime = Date.now(); };
+    presenter.addEventListener('keydown', key);
+    const tick = () => {
+      if (!presenter || presenter.closed) return;
+      const el = Math.floor((Date.now() - startTime) / 1000);
+      d.getElementById('clk').textContent = `${Math.floor(el / 60)}:${String(el % 60).padStart(2, '0')}`;
+      const planned = slides.slice(0, cur).reduce((a, s) => a + parseFloat(s.dataset.t), 0);
+      const diff = el / 60 - planned;
+      d.getElementById('pace').innerHTML = `Plan: slide starts at ${Math.floor(planned)}:${String(Math.round((planned % 1) * 60)).padStart(2, '0')} · <span class="${diff > 1 ? 'late' : 'ok'}">${diff > 1 ? Math.round(diff) + ' min behind' : 'on time'}</span>`;
+      setTimeout(tick, 500);
+    };
+    tick(); updatePresenter();
+  }
+  function updatePresenter() {
+    if (!presenter || presenter.closed) return;
+    const d = presenter.document; if (!d.getElementById('n')) return;
+    d.getElementById('n').innerHTML = notesHTML(cur);
+    const ns = slides[cur + 1];
+    d.getElementById('nx').textContent = step < nSteps(slides[cur]) ? `Click ${step + 1} of ${nSteps(slides[cur])} on this slide` : (ns ? headline(ns) : 'End');
+  }
+
+  const start = parseInt(location.hash.slice(1), 10);
+  go(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+</body>
+</html>
